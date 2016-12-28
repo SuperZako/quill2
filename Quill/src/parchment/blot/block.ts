@@ -5,7 +5,7 @@
 class BlockBlot extends FormatBlot {
     static blotName = 'block';
     static scope = Registry.Scope.BLOCK_BLOT;
-    static tagName = 'P';
+    static tagName = ['P'];
 
     static formats(domNode): any {
         let tagName = (<any>Registry.query(BlockBlot.blotName)).tagName;

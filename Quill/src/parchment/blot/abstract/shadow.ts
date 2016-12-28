@@ -9,7 +9,7 @@ class ShadowBlot implements Blot {
     static blotName = 'abstract';
     static className: string;
     static scope: Registry.Scope;
-    static tagName: string;
+    static tagName: string[];
 
     prev: Blot;
     next: Blot;

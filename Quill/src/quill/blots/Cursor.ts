@@ -11,16 +11,23 @@
 
 
 class Cursor extends Embed {
+    static blotName = 'cursor';
+    static className = 'ql-cursor';
+    static tagName = 'span';
+    static CONTENTS = "\uFEFF";   // Zero width no break space
+
     static value() {
         return undefined;
     }
 
-    constructor(domNode, selection) {
+    public textNode = document.createTextNode(Cursor.CONTENTS);
+    private _length = 0;
+    constructor(domNode, public selection) {
         super(domNode);
-        this.selection = selection;
-        this.textNode = document.createTextNode(Cursor.CONTENTS);
+        // this.selection = selection;
+        // this.textNode = document.createTextNode(Cursor.CONTENTS);
         this.domNode.appendChild(this.textNode);
-        this._length = 0;
+        // this._length = 0;
     }
 
     detach() {
@@ -32,7 +39,7 @@ class Cursor extends Embed {
         if (this._length !== 0) {
             return super.format(name, value);
         }
-        let target = this, index = 0;
+        let target: Blot = this, index = 0;
         while (target != null && target.statics.scope !== Parchment.Scope.BLOCK_BLOT) {
             index += target.offset(target.parent);
             target = target.parent;
@@ -111,10 +118,10 @@ class Cursor extends Embed {
         return '';
     }
 }
-Cursor.blotName = 'cursor';
-Cursor.className = 'ql-cursor';
-Cursor.tagName = 'span';
-Cursor.CONTENTS = "\uFEFF";   // Zero width no break space
+//Cursor.blotName = 'cursor';
+//Cursor.className = 'ql-cursor';
+//Cursor.tagName = 'span';
+//Cursor.CONTENTS = "\uFEFF";   // Zero width no break space
 
 
 // export default Cursor;

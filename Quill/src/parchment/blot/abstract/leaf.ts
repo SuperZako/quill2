@@ -15,6 +15,10 @@ class LeafBlot extends ShadowBlot implements Leaf {
         return true;
     }
 
+    public constructor(domNode: Node) {
+        super(domNode);
+    }
+
     index(node, offset): number {
         if (node !== this.domNode) return -1;
         return Math.min(offset, 1);

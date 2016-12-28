@@ -7,6 +7,13 @@
 
 
 class Inline extends InlineBlot {
+
+    static order = [
+        'cursor', 'inline',   // Must be lower
+        'code', 'underline', 'strike', 'italic', 'bold', 'script',
+        'link'                // Must be higher
+    ];
+
     static compare(self, other) {
         let selfIndex = Inline.order.indexOf(self);
         let otherIndex = Inline.order.indexOf(other);
@@ -44,11 +51,11 @@ class Inline extends InlineBlot {
 }
 Inline.allowedChildren = [Inline, Embed, TextBlot];
 // Lower index means deeper in the DOM tree, since not found (-1) is for embeds
-Inline.order = [
-    'cursor', 'inline',   // Must be lower
-    'code', 'underline', 'strike', 'italic', 'bold', 'script',
-    'link'                // Must be higher
-];
+//Inline.order = [
+//    'cursor', 'inline',   // Must be lower
+//    'code', 'underline', 'strike', 'italic', 'bold', 'script',
+//    'link'                // Must be higher
+//];
 
 
 // export default Inline;

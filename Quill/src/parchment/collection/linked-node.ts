@@ -1,8 +1,8 @@
 interface LinkedNode {
-  prev: LinkedNode;
-  next: LinkedNode;
+    prev: LinkedNode;
+    next: LinkedNode;
 
-  length(): number;
+    length(): number;
 }
 
 

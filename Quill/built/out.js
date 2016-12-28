@@ -917,8 +917,8 @@ var FormatBlot = (function (_super) {
 // import * as Registry from '../../registry';
 var LeafBlot = (function (_super) {
     __extends(LeafBlot, _super);
-    function LeafBlot() {
-        return _super.apply(this, arguments) || this;
+    function LeafBlot(domNode) {
+        return _super.call(this, domNode) || this;
     }
     LeafBlot.value = function (domNode) {
         return true;
@@ -989,7 +989,7 @@ var BlockBlot = (function (_super) {
 }(FormatBlot));
 BlockBlot.blotName = 'block';
 BlockBlot.scope = Registry.Scope.BLOCK_BLOT;
-BlockBlot.tagName = 'P';
+BlockBlot.tagName = ['P'];
 // export default BlockBlot;
 // import { Formattable } from './abstract/blot';
 ///<reference path='./abstract/leaf.ts' />
@@ -1086,7 +1086,7 @@ var InlineBlot = (function (_super) {
 }(FormatBlot));
 InlineBlot.blotName = 'inline';
 InlineBlot.scope = Registry.Scope.INLINE_BLOT;
-InlineBlot.tagName = 'SPAN';
+InlineBlot.tagName = ['SPAN'];
 // export default InlineBlot;
 // import { Blot } from './abstract/blot';
 // import ContainerBlot from './abstract/container';
@@ -1386,8 +1386,8 @@ var underline = "<svg viewbox=\"0 0 18 18\"> <path class=ql-stroke d=M5,3V9a4.01
 var video = "<svg viewbox=\"0 0 18 18\"> <rect class=ql-stroke height=12 width=12 x=3 y=3></rect> <rect class=ql-fill height=12 width=1 x=5 y=3></rect> <rect class=ql-fill height=12 width=1 x=12 y=3></rect> <rect class=ql-fill height=2 width=8 x=5 y=8></rect> <rect class=ql-fill height=1 width=3 x=3 y=5></rect> <rect class=ql-fill height=1 width=3 x=3 y=7></rect> <rect class=ql-fill height=1 width=3 x=3 y=10></rect> <rect class=ql-fill height=1 width=3 x=3 y=12></rect> <rect class=ql-fill height=1 width=3 x=12 y=5></rect> <rect class=ql-fill height=1 width=3 x=12 y=7></rect> <rect class=ql-fill height=1 width=3 x=12 y=10></rect> <rect class=ql-fill height=1 width=3 x=12 y=12></rect> </svg>";
 var Embed = (function (_super) {
     __extends(Embed, _super);
-    function Embed() {
-        return _super.apply(this, arguments) || this;
+    function Embed(domNode) {
+        return _super.call(this, domNode) || this;
     }
     return Embed;
 }(EmbedBlot));
@@ -1445,13 +1445,18 @@ var Inline = (function (_super) {
     };
     return Inline;
 }(InlineBlot));
-Inline.allowedChildren = [Inline, Embed, TextBlot];
-// Lower index means deeper in the DOM tree, since not found (-1) is for embeds
 Inline.order = [
     'cursor', 'inline',
     'code', 'underline', 'strike', 'italic', 'bold', 'script',
     'link' // Must be higher
 ];
+Inline.allowedChildren = [Inline, Embed, TextBlot];
+// Lower index means deeper in the DOM tree, since not found (-1) is for embeds
+//Inline.order = [
+//    'cursor', 'inline',   // Must be lower
+//    'code', 'underline', 'strike', 'italic', 'bold', 'script',
+//    'link'                // Must be higher
+//];
 // export default Inline; 
 //import extend from 'extend';
 //import Delta from 'quill-delta';
@@ -1732,9 +1737,12 @@ var Cursor = (function (_super) {
         var _this = _super.call(this, domNode) || this;
         _this.selection = selection;
         _this.textNode = document.createTextNode(Cursor.CONTENTS);
-        _this.domNode.appendChild(_this.textNode);
         _this._length = 0;
+        // this.selection = selection;
+        // this.textNode = document.createTextNode(Cursor.CONTENTS);
+        _this.domNode.appendChild(_this.textNode);
         return _this;
+        // this._length = 0;
     }
     Cursor.value = function () {
         return undefined;
@@ -1834,6 +1842,10 @@ Cursor.blotName = 'cursor';
 Cursor.className = 'ql-cursor';
 Cursor.tagName = 'span';
 Cursor.CONTENTS = "\uFEFF"; // Zero width no break space
+//Cursor.blotName = 'cursor';
+//Cursor.className = 'ql-cursor';
+//Cursor.tagName = 'span';
+//Cursor.CONTENTS = "\uFEFF";   // Zero width no break space
 // export default Cursor; 
 // import Parchment from 'parchment';
 // import Emitter from '../core/emitter';
@@ -4497,6 +4509,8 @@ var Underline = (function (_super) {
 }(Inline));
 Underline.blotName = 'underline';
 Underline.tagName = 'U';
+//Underline.blotName = 'underline';
+//Underline.tagName = 'U';
 // export default Underline; 
 ///<reference path='../blots/block.ts' />
 // import { BlockEmbed } from '../blots/block';

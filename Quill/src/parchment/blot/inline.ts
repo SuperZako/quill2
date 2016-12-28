@@ -17,7 +17,7 @@ function isEqual(obj1, obj2): boolean {
 class InlineBlot extends FormatBlot {
     static blotName = 'inline';
     static scope = Registry.Scope.INLINE_BLOT;
-    static tagName = 'SPAN';
+    static tagName = ['SPAN'];
 
     static formats(domNode): any {
         if (domNode.tagName === InlineBlot.tagName) return undefined;
