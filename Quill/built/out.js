@@ -2454,6 +2454,8 @@ var Module = (function () {
         if (options === void 0) { options = {}; }
         this.quill = quill;
         this.options = options;
+        // this.quill = quill;
+        // this.options = options;
     }
     return Module;
 }());
@@ -2478,8 +2480,10 @@ var Range = (function () {
 var Selection = (function () {
     function Selection(scroll, emitter) {
         var _this = this;
-        this.emitter = emitter;
         this.scroll = scroll;
+        this.emitter = emitter;
+        // this.emitter = emitter;
+        // this.scroll = scroll;
         this.composing = false;
         this.root = this.scroll.domNode;
         this.root.addEventListener('compositionstart', function () {
@@ -4230,6 +4234,8 @@ var Blockquote = (function (_super) {
 }(Block));
 Blockquote.blotName = 'blockquote';
 Blockquote.tagName = 'blockquote';
+//Blockquote.blotName = 'blockquote';
+//Blockquote.tagName = 'blockquote';
 // export default Blockquote; 
 ///<reference path='../blots/inline.ts' />
 // import Inline from '../blots/inline';
@@ -5033,6 +5039,8 @@ var Picker = (function () {
         var _this = this;
         this.select = select;
         this.container = document.createElement('span');
+        // this.select = select;
+        // this.container = document.createElement('span');
         this.buildPicker();
         this.select.style.display = 'none';
         this.select.parentNode.insertBefore(this.container, this.select);
@@ -5200,6 +5208,7 @@ var Tooltip = (function () {
     function Tooltip(quill, boundsContainer) {
         var _this = this;
         this.quill = quill;
+        // this.quill = quill;
         this.boundsContainer = boundsContainer || document.body;
         this.root = quill.addContainer('ql-tooltip');
         this.root.innerHTML = this.constructor.TEMPLATE;

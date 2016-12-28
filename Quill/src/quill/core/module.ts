@@ -1,7 +1,7 @@
 ﻿class Module {
-    constructor(quill, options = {}) {
-        this.quill = quill;
-        this.options = options;
+    constructor(public quill,public options = {}) {
+        // this.quill = quill;
+        // this.options = options;
     }
 }
 Module.DEFAULTS = {};

@@ -41,6 +41,7 @@ const SIZES = ['small', false, 'large', 'huge'];
 
 
 class BaseTheme extends Theme {
+    tooltip;
     constructor(quill, options) {
         super(quill, options);
         let listener = (e) => {

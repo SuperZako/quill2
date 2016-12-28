@@ -20,9 +20,9 @@ class Range {
 
 
 class Selection {
-    constructor(scroll, emitter) {
-        this.emitter = emitter;
-        this.scroll = scroll;
+    constructor(public scroll, public  emitter) {
+        // this.emitter = emitter;
+        // this.scroll = scroll;
         this.composing = false;
         this.root = this.scroll.domNode;
         this.root.addEventListener('compositionstart', () => {

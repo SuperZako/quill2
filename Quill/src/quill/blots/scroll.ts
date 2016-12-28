@@ -12,6 +12,7 @@ function _isLine(blot) {
 
 
 class Scroll extends Parchment.ScrollBlot {
+    whitelist;
     constructor(domNode, config) {
         super(domNode);
         this.emitter = config.emitter;

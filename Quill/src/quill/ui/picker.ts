@@ -2,9 +2,10 @@
 
 
 class Picker {
-    constructor(select) {
-        this.select = select;
-        this.container = document.createElement('span');
+    container = document.createElement('span');
+    constructor(public select) {
+        // this.select = select;
+        // this.container = document.createElement('span');
         this.buildPicker();
         this.select.style.display = 'none';
         this.select.parentNode.insertBefore(this.container, this.select);
