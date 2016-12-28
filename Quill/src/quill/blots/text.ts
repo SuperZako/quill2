@@ -1,4 +1,4 @@
 ﻿
 
-class TextBlot extends _TextBlot {
+class TextBlot extends Parchment.TextBlot {
 }

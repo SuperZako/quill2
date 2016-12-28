@@ -202,12 +202,12 @@ function matchAlias(format, node, delta) {
 }
 
 function matchAttributor(node, delta) {
-    let attributes = /*Parchment.Attributor.Attribute*/Attributor.keys(node);
-    let classes = /*Parchment.Attributor.Class*/ClassAttributor.keys(node);
-    let styles = /*Parchment.Attributor.Style*/StyleAttributor.keys(node);
+    let attributes = Parchment.Attributor.keys(node);
+    let classes = Parchment.ClassAttributor.keys(node);
+    let styles = Parchment.StyleAttributor.keys(node);
     let formats = {};
     attributes.concat(classes).concat(styles).forEach((name) => {
-        let attr = /*Parchment*/Registry.query(name, /*Parchment*/Registry.Scope.ATTRIBUTE);
+        let attr = Parchment.query(name, Parchment.Scope.ATTRIBUTE);
         if (attr != null) {
             formats[attr.attrName] = attr.value(node);
             if (formats[attr.attrName]) return;
@@ -228,9 +228,9 @@ function matchAttributor(node, delta) {
 }
 
 function matchBlot(node, delta) {
-    let match = /*Parchment*/Registry.query(node);
+    let match = Parchment.query(node);
     if (match == null) return delta;
-    if (match.prototype instanceof /*Parchment.*/EmbedBlot) {
+    if (match.prototype instanceof Parchment.EmbedBlot) {
         let embed = {};
         let value = match.value(node);
         if (value != null) {

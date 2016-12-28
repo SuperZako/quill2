@@ -1,6 +1,6 @@
 ﻿// import Parchment from 'parchment';
 
-class IdentAttributor extends /*Parchment.Attributor.Class*/ClassAttributor {
+class IdentAttributor extends Parchment.ClassAttributor {
     add(node, value) {
         if (value === '+1' || value === '-1') {
             let indent = this.value(node) || 0;
@@ -24,7 +24,7 @@ class IdentAttributor extends /*Parchment.Attributor.Class*/ClassAttributor {
 }
 
 let IndentClass = new IdentAttributor('indent', 'ql-indent', {
-    scope: /*Parchment*/Registry.Scope.BLOCK,
+    scope: Parchment.Scope.BLOCK,
     whitelist: [1, 2, 3, 4, 5, 6, 7, 8]
 });
 

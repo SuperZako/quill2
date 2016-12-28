@@ -1,11 +1,11 @@
 ﻿// import Parchment from 'parchment';
 
-let SizeClass = new /*Parchment.Attributor.Class*/ClassAttributor('size', 'ql-size', {
-    scope: /*Parchment*/Registry.Scope.INLINE,
+let SizeClass = new Parchment.ClassAttributor('size', 'ql-size', {
+    scope: Parchment.Scope.INLINE,
     whitelist: ['small', 'large', 'huge']
 });
-let SizeStyle = new /*Parchment.Attributor.Style*/StyleAttributor('size', 'font-size', {
-    scope: /*Parchment*/Registry.Scope.INLINE,
+let SizeStyle = new Parchment.StyleAttributor('size', 'font-size', {
+    scope: Parchment.Scope.INLINE,
     whitelist: ['10px', '18px', '32px']
 });
 

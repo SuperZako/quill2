@@ -1,6 +1,6 @@
 ﻿
 
-class Embed extends EmbedBlot {
+class Embed extends Parchment.EmbedBlot {
     constructor(domNode: Node) {
         super(domNode);
     }

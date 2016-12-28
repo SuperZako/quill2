@@ -52,7 +52,7 @@ class Quill {
             this.imports[path] = target;
             if ((path.startsWith('blots/') || path.startsWith('formats/')) &&
                 target.blotName !== 'abstract') {
-        /*Parchment*/Registry.register(target);
+                Parchment.register(target);
             }
         }
     }
@@ -71,7 +71,7 @@ class Quill {
         this.container.innerHTML = '';
         this.root = this.addContainer('ql-editor');
         this.emitter = new Emitter();
-        this.scroll = /*Parchment*/Registry.create(this.root, {
+        this.scroll = Parchment.create(this.root, {
             emitter: this.emitter,
             whitelist: this.options.formats
         });
@@ -149,7 +149,7 @@ class Quill {
             let change = new Delta();
             if (range == null) {
                 return change;
-            } else if (/*Parchment*/Registry.query(name, /*Parchment*/Registry.Scope.BLOCK)) {
+            } else if (Parchment.query(name, Parchment.Scope.BLOCK)) {
                 change = this.editor.formatLine(range.index, range.length, { [name]: value });
             } else if (range.length === 0) {
                 this.selection.format(name, value);

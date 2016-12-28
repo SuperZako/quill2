@@ -20,8 +20,8 @@ declare var Delta;
 declare var clone;
 
 class Editor {
-    constructor(scroll) {
-        this.scroll = scroll;
+    constructor(public scroll) {
+        // this.scroll = scroll;
         this.delta = this.getDelta();
     }
 
@@ -48,7 +48,7 @@ class Editor {
                     let [line, offset] = this.scroll.line(index);
                     let formats = extend({}, bubbleFormats(line));
                     if (line instanceof Block) {
-                        let [leaf,] = line.descendant(/*Parchment.*/LeafBlot, offset);
+                        let [leaf,] = line.descendant(Parchment.LeafBlot, offset);
                         formats = extend(formats, bubbleFormats(leaf));
                     }
                     attributes = /*DeltaOp*/lib.attributes.diff(formats, attributes) || {};
@@ -126,13 +126,13 @@ class Editor {
                 let [blot,] = path;
                 if (blot instanceof Block) {
                     lines.push(blot);
-                } else if (blot instanceof /*Parchment.*/LeafBlot) {
+                } else if (blot instanceof Parchment.LeafBlot) {
                     leaves.push(blot);
                 }
             });
         } else {
             lines = this.scroll.lines(index, length);
-            leaves = this.scroll.descendants(/*Parchment.*/LeafBlot, index, length);
+            leaves = this.scroll.descendants(Parchment.LeafBlot, index, length);
         }
         let formatsArr = [lines, leaves].map(function (blots) {
             if (blots.length === 0) return {};
@@ -203,7 +203,7 @@ class Editor {
             let textBlot = Parchment.find(mutations[0].target);
             let formats = bubbleFormats(textBlot);
             let index = textBlot.offset(this.scroll);
-            let oldValue = mutations[0].oldValue.replace(CursorBlot.CONTENTS, '');
+            let oldValue = mutations[0].oldValue.replace(Cursor.CONTENTS, '');
             let oldText = new Delta().insert(oldValue);
             let newText = new Delta().insert(textBlot.value());
             let diffDelta = new Delta().retain(index).concat(oldText.diff(newText, cursorIndex));

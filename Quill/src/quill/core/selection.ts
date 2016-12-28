@@ -31,7 +31,7 @@ class Selection {
         this.root.addEventListener('compositionend', () => {
             this.composing = false;
         });
-        this.cursor = /*Parchment*/Registry.create('cursor', this);
+        this.cursor = Parchment.create('cursor', this);
         // savedRange is last non-null range
         this.lastRange = this.savedRange = new Range(0, 0);
         ['keyup', 'mouseup', 'mouseleave', 'touchend', 'touchleave', 'focus', 'blur'].forEach((eventName) => {
@@ -181,11 +181,11 @@ class Selection {
         }
         let indexes = positions.map((position) => {
             let [node, offset] = position;
-            let blot = /*Parchment*/Registry.find(node, true);
+            let blot = Parchment.find(node, true);
             let index = blot.offset(this.scroll);
             if (offset === 0) {
                 return index;
-            } else if (blot instanceof /*Parchment.*/ContainerBlot) {
+            } else if (blot instanceof Parchment.ContainerBlot) {
                 return index + blot.length();
             } else {
                 return index + blot.index(node, offset);

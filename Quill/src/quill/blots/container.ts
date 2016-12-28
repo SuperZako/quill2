@@ -4,7 +4,7 @@
 // import Block, { BlockEmbed } from './block';
 
 
-class Container extends /*Parchment.*/ContainerBlot { }
+class Container extends Parchment.ContainerBlot { }
 Container.allowedChildren = [Block, BlockEmbed, Container];
 
 

@@ -2,89 +2,90 @@
 //import LeafBlot from './abstract/leaf';
 //import * as Registry from '../registry';
 
+namespace Parchment {
+    export class TextBlot extends LeafBlot implements Leaf {
+        static blotName = 'text';
+        static scope = Scope.INLINE_BLOT;
 
-class _TextBlot extends LeafBlot implements Leaf {
-    static blotName = 'text';
-    static scope = Registry.Scope.INLINE_BLOT;
+        public domNode: Text;
+        protected text: string;
 
-    public domNode: Text;
-    protected text: string;
-
-    static create(value: string): Text {
-        return document.createTextNode(value);
-    }
-
-    static value(domNode: Text): string {
-        return domNode.data;
-    }
-
-    constructor(node: Node) {
-        super(node);
-        this.text = this.statics.value(this.domNode);
-    }
-
-    deleteAt(index: number, length: number): void {
-        this.domNode.data = this.text = this.text.slice(0, index) + this.text.slice(index + length);
-    }
-
-    index(node, offset): number {
-        if (this.domNode === node) {
-            return offset;
+        static create(value: string): Text {
+            return document.createTextNode(value);
         }
-        return -1;
-    }
 
-    insertAt(index: number, value: string, def?: any): void {
-        if (def == null) {
-            this.text = this.text.slice(0, index) + value + this.text.slice(index);
-            this.domNode.data = this.text;
-        } else {
-            super.insertAt(index, value, def);
+        static value(domNode: Text): string {
+            return domNode.data;
         }
-    }
 
-    length(): number {
-        return this.text.length;
-    }
-
-    optimize(): void {
-        super.optimize();
-        this.text = TextBlot.value(this.domNode);
-        if (this.text.length === 0) {
-            this.remove();
-        } else if (this.next instanceof TextBlot && this.next.prev === this) {
-            this.insertAt(this.length(), (<TextBlot>this.next).value());
-            this.next.remove();
+        constructor(node: Node) {
+            super(node);
+            this.text = this.statics.value(this.domNode);
         }
-    }
 
-    position(index: number, inclusive: boolean = false): [Node, number] {
-        return [this.domNode, index];
-    }
-
-    split(index: number, force: boolean = false): Blot {
-        if (!force) {
-            if (index === 0) return this;
-            if (index === this.length()) return this.next;
+        deleteAt(index: number, length: number): void {
+            this.domNode.data = this.text = this.text.slice(0, index) + this.text.slice(index + length);
         }
-        let after = Registry.create(this.domNode.splitText(index));
-        this.parent.insertBefore(after, this.next);
-        this.text = this.statics.value(this.domNode);
-        return after;
-    }
 
-    update(mutations: MutationRecord[]): void {
-        if (mutations.some((mutation) => {
-            return mutation.type === 'characterData' && mutation.target === this.domNode;
-        })) {
+        index(node, offset): number {
+            if (this.domNode === node) {
+                return offset;
+            }
+            return -1;
+        }
+
+        insertAt(index: number, value: string, def?: any): void {
+            if (def == null) {
+                this.text = this.text.slice(0, index) + value + this.text.slice(index);
+                this.domNode.data = this.text;
+            } else {
+                super.insertAt(index, value, def);
+            }
+        }
+
+        length(): number {
+            return this.text.length;
+        }
+
+        optimize(): void {
+            super.optimize();
             this.text = TextBlot.value(this.domNode);
+            if (this.text.length === 0) {
+                this.remove();
+            } else if (this.next instanceof TextBlot && this.next.prev === this) {
+                this.insertAt(this.length(), (<TextBlot>this.next).value());
+                this.next.remove();
+            }
+        }
+
+        position(index: number, inclusive: boolean = false): [Node, number] {
+            return [this.domNode, index];
+        }
+
+        split(index: number, force: boolean = false): Blot {
+            if (!force) {
+                if (index === 0) return this;
+                if (index === this.length()) return this.next;
+            }
+            let after = create(this.domNode.splitText(index));
+            this.parent.insertBefore(after, this.next);
+            this.text = this.statics.value(this.domNode);
+            return after;
+        }
+
+        update(mutations: MutationRecord[]): void {
+            if (mutations.some((mutation) => {
+                return mutation.type === 'characterData' && mutation.target === this.domNode;
+            })) {
+                this.text = TextBlot.value(this.domNode);
+            }
+        }
+
+        value(): string {
+            return this.text;
         }
     }
 
-    value(): string {
-        return this.text;
-    }
+
+    // export default TextBlot;
 }
-
-
-// export default TextBlot;

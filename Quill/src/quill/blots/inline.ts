@@ -6,7 +6,7 @@
 //import Parchment from 'parchment';
 
 
-class Inline extends InlineBlot {
+class Inline extends Parchment.InlineBlot {
 
     static order = [
         'cursor', 'inline',   // Must be lower
@@ -29,7 +29,7 @@ class Inline extends InlineBlot {
     }
 
     formatAt(index, length, name, value) {
-        if (Inline.compare(this.statics.blotName, name) < 0 && Registry.query(name, Registry.Scope.BLOT)) {
+        if (Inline.compare(this.statics.blotName, name) < 0 && Parchment.query(name, Parchment.Scope.BLOT)) {
             let blot = this.isolate(index, length);
             if (value) {
                 blot.wrap(name, value);

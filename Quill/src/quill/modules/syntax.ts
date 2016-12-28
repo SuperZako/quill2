@@ -31,8 +31,8 @@ class SyntaxCodeBlock extends CodeBlock {
 SyntaxCodeBlock.className = 'ql-syntax';
 
 
-let CodeToken = new/* Parchment.Attributor.Class*/ClassAttributor('token', 'hljs', {
-    scope: /*Parchment*/Registry.Scope.INLINE
+let CodeToken = new Parchment.ClassAttributor('token', 'hljs', {
+    scope: Parchment.Scope.INLINE
 });
 
 

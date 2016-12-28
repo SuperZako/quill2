@@ -19,7 +19,7 @@ const NEWLINE_LENGTH = 1;
 class BlockEmbed extends Embed {
     attach() {
         super.attach();
-        this.attributes = new /*Parchment.Attributor.Store*/AttributorStore(this.domNode);
+        this.attributes = new Parchment.AttributorStore(this.domNode);
     }
 
     delta() {
@@ -27,7 +27,7 @@ class BlockEmbed extends Embed {
     }
 
     format(name, value) {
-        let attribute = /*Parchment*/Registry.query(name, /*Parchment*/Registry.Scope.BLOCK_ATTRIBUTE);
+        let attribute = Parchment.query(name, Parchment.Scope.BLOCK_ATTRIBUTE);
         if (attribute != null) {
             this.attributes.attribute(attribute, value);
         }
@@ -39,7 +39,7 @@ class BlockEmbed extends Embed {
 
     insertAt(index, value, def) {
         if (typeof value === 'string' && value.endsWith('\n')) {
-            let block = /*Parchment*/Registry.create(Block.blotName);
+            let block = Parchment.create(Block.blotName);
             this.parent.insertBefore(block, index === 0 ? this : this.next);
             block.insertAt(0, value.slice(0, -1));
         } else {
@@ -47,11 +47,11 @@ class BlockEmbed extends Embed {
         }
     }
 }
-BlockEmbed.scope = /*Parchment*/Registry.Scope.BLOCK_BLOT;
+BlockEmbed.scope = Parchment.Scope.BLOCK_BLOT;
 // It is important for cursor behavior BlockEmbeds use tags that are block level elements
 
 
-class Block extends /*Parchment.*/BlockBlot {
+class Block extends Parchment.BlockBlot {
     constructor(domNode) {
         super(domNode);
         this.cache = {};
@@ -59,7 +59,7 @@ class Block extends /*Parchment.*/BlockBlot {
 
     delta() {
         if (this.cache.delta == null) {
-            this.cache.delta = this.descendants(/*Parchment.Leaf*/LeafBlot).reduce((delta, leaf) => {
+            this.cache.delta = this.descendants(Parchment.LeafBlot).reduce((delta, leaf) => {
                 if (leaf.length() === 0) {
                     return delta;
                 } else {
@@ -77,7 +77,7 @@ class Block extends /*Parchment.*/BlockBlot {
 
     formatAt(index, length, name, value) {
         if (length <= 0) return;
-        if (/*Parchment*/Registry.query(name, /*Parchment*/Registry.Scope.BLOCK)) {
+        if (Parchment.query(name, Parchment.Scope.BLOCK)) {
             if (index + length === this.length()) {
                 this.format(name, value);
             }

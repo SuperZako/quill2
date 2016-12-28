@@ -1,6 +1,6 @@
 ﻿// import Parchment from 'parchment';
 
-class ColorAttributor extends /*Parchment.Attributor.Style*/StyleAttributor {
+class ColorAttributor extends Parchment.StyleAttributor {
     value(domNode) {
         let value = super.value(domNode);
         if (!value.startsWith('rgb(')) return value;
@@ -11,11 +11,11 @@ class ColorAttributor extends /*Parchment.Attributor.Style*/StyleAttributor {
     }
 }
 
-let ColorClass = new /*Parchment.Attributor.Class*/Attributor('color', 'ql-color', {
-    scope: /*Parchment*/Registry.Scope.INLINE
+let ColorClass = new Parchment.ClassAttributor('color', 'ql-color', {
+    scope: Parchment.Scope.INLINE
 });
 let ColorStyle = new ColorAttributor('color', 'color', {
-    scope: /*Parchment*/Registry.Scope.INLINE
+    scope: Parchment.Scope.INLINE
 });
 
 // export { ColorAttributor, ColorClass, ColorStyle };

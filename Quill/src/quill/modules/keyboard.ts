@@ -86,8 +86,8 @@ class Keyboard extends Module {
             let [line, offset] = this.quill.scroll.line(range.index);
             let [leafStart, offsetStart] = this.quill.scroll.leaf(range.index);
             let [leafEnd, offsetEnd] = range.length === 0 ? [leafStart, offsetStart] : this.quill.scroll.leaf(range.index + range.length);
-            let prefixText = leafStart instanceof Parchment.Text ? leafStart.value().slice(0, offsetStart) : '';
-            let suffixText = leafEnd instanceof Parchment.Text ? leafEnd.value().slice(offsetEnd) : '';
+            let prefixText = leafStart instanceof Parchment.TextBlot ? leafStart.value().slice(0, offsetStart) : '';
+            let suffixText = leafEnd instanceof Parchment.TextBlot ? leafEnd.value().slice(offsetEnd) : '';
             let curContext = {
                 collapsed: range.length === 0,
                 empty: range.length === 0 && line.length() <= 1,

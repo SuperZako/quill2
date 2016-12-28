@@ -1,9 +1,11 @@
-interface LinkedNode {
-    prev: LinkedNode;
-    next: LinkedNode;
+namespace Parchment {
+    export interface LinkedNode {
+        prev: LinkedNode;
+        next: LinkedNode;
 
-    length(): number;
+        length(): number;
+    }
+
+
+    // export default LinkedNode;
 }
-
-
-// export default LinkedNode;

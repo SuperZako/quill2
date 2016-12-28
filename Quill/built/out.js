@@ -5,8 +5,8 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 //import Attributor from './attributor/attributor';
 //import { Blot, Formattable } from './blot/abstract/blot';
-var Registry;
-(function (Registry) {
+var Parchment;
+(function (Parchment) {
     var ParchmentError = (function (_super) {
         __extends(ParchmentError, _super);
         function ParchmentError(message) {
@@ -19,12 +19,12 @@ var Registry;
         }
         return ParchmentError;
     }(Error));
-    Registry.ParchmentError = ParchmentError;
+    Parchment.ParchmentError = ParchmentError;
     var attributes = {};
     var classes = {};
     var tags = {};
     var types = {};
-    Registry.DATA_KEY = '__blot';
+    Parchment.DATA_KEY = '__blot';
     (function (Scope) {
         Scope[Scope["TYPE"] = 3] = "TYPE";
         Scope[Scope["LEVEL"] = 12] = "LEVEL";
@@ -37,8 +37,8 @@ var Registry;
         Scope[Scope["BLOCK_ATTRIBUTE"] = 9] = "BLOCK_ATTRIBUTE";
         Scope[Scope["INLINE_ATTRIBUTE"] = 5] = "INLINE_ATTRIBUTE";
         Scope[Scope["ANY"] = 15] = "ANY";
-    })(Registry.Scope || (Registry.Scope = {}));
-    var Scope = Registry.Scope;
+    })(Parchment.Scope || (Parchment.Scope = {}));
+    var Scope = Parchment.Scope;
     ;
     function create(input, value) {
         var match = query(input);
@@ -49,18 +49,18 @@ var Registry;
         var node = input instanceof Node ? input : BlotClass.create(value);
         return new BlotClass(node, value);
     }
-    Registry.create = create;
+    Parchment.create = create;
     function find(node, bubble) {
         if (bubble === void 0) { bubble = false; }
         if (node == null)
             return null;
-        if (node[Registry.DATA_KEY] != null)
-            return node[Registry.DATA_KEY].blot;
+        if (node[Parchment.DATA_KEY] != null)
+            return node[Parchment.DATA_KEY].blot;
         if (bubble)
             return find(node.parentNode, bubble);
         return null;
     }
-    Registry.find = find;
+    Parchment.find = find;
     function query(query, scope) {
         if (scope === void 0) { scope = Scope.ANY; }
         var match;
@@ -93,7 +93,7 @@ var Registry;
             return match;
         return null;
     }
-    Registry.query = query;
+    Parchment.query = query;
     function register() {
         var Definitions = [];
         for (var _i = 0; _i < arguments.length; _i++) {
@@ -138,330 +138,349 @@ var Registry;
         }
         return Definition;
     }
-    Registry.register = register;
-})(Registry || (Registry = {}));
+    Parchment.register = register;
+})(Parchment || (Parchment = {}));
 ///<reference path='../registry.ts' />
 // import * as Registry from '../registry';
-var Attributor = (function () {
-    function Attributor(attrName, keyName, options) {
-        if (options === void 0) { options = {}; }
-        this.attrName = attrName;
-        this.keyName = keyName;
-        var attributeBit = Registry.Scope.TYPE & Registry.Scope.ATTRIBUTE;
-        if (options.scope != null) {
-            // Ignore type bits, force attribute bit
-            this.scope = (options.scope & Registry.Scope.LEVEL) | attributeBit;
+var Parchment;
+(function (Parchment) {
+    var Attributor = (function () {
+        function Attributor(attrName, keyName, options) {
+            if (options === void 0) { options = {}; }
+            this.attrName = attrName;
+            this.keyName = keyName;
+            var attributeBit = Parchment.Scope.TYPE & Parchment.Scope.ATTRIBUTE;
+            if (options.scope != null) {
+                // Ignore type bits, force attribute bit
+                this.scope = (options.scope & Parchment.Scope.LEVEL) | attributeBit;
+            }
+            else {
+                this.scope = Parchment.Scope.ATTRIBUTE;
+            }
+            if (options.whitelist != null)
+                this.whitelist = options.whitelist;
         }
-        else {
-            this.scope = Registry.Scope.ATTRIBUTE;
-        }
-        if (options.whitelist != null)
-            this.whitelist = options.whitelist;
-    }
-    Attributor.keys = function (node) {
-        return [].map.call(node.attributes, function (item) {
-            return item.name;
-        });
-    };
-    Attributor.prototype.add = function (node, value) {
-        if (!this.canAdd(node, value))
-            return false;
-        node.setAttribute(this.keyName, value);
-        return true;
-    };
-    Attributor.prototype.canAdd = function (node, value) {
-        var match = Registry.query(node, Registry.Scope.BLOT & (this.scope | Registry.Scope.TYPE));
-        if (match != null && (this.whitelist == null || this.whitelist.indexOf(value) > -1)) {
+        Attributor.keys = function (node) {
+            return [].map.call(node.attributes, function (item) {
+                return item.name;
+            });
+        };
+        Attributor.prototype.add = function (node, value) {
+            if (!this.canAdd(node, value))
+                return false;
+            node.setAttribute(this.keyName, value);
             return true;
-        }
-        return false;
-    };
-    Attributor.prototype.remove = function (node) {
-        node.removeAttribute(this.keyName);
-    };
-    Attributor.prototype.value = function (node) {
-        var value = node.getAttribute(this.keyName);
-        return this.canAdd(node, value) ? value : '';
-    };
-    return Attributor;
-}());
+        };
+        Attributor.prototype.canAdd = function (node, value) {
+            var match = Parchment.query(node, Parchment.Scope.BLOT & (this.scope | Parchment.Scope.TYPE));
+            if (match != null && (this.whitelist == null || this.whitelist.indexOf(value) > -1)) {
+                return true;
+            }
+            return false;
+        };
+        Attributor.prototype.remove = function (node) {
+            node.removeAttribute(this.keyName);
+        };
+        Attributor.prototype.value = function (node) {
+            var value = node.getAttribute(this.keyName);
+            return this.canAdd(node, value) ? value : '';
+        };
+        return Attributor;
+    }());
+    Parchment.Attributor = Attributor;
+})(Parchment || (Parchment = {}));
 ///<reference path='./attributor.ts' />
 // import Attributor from './attributor';
-function _match(node, prefix) {
-    var className = node.getAttribute('class') || '';
-    return className.split(/\s+/).filter(function (name) {
-        return name.indexOf(prefix + "-") === 0;
-    });
-}
-var ClassAttributor = (function (_super) {
-    __extends(ClassAttributor, _super);
-    function ClassAttributor() {
-        return _super.apply(this, arguments) || this;
+var Parchment;
+(function (Parchment) {
+    function _match(node, prefix) {
+        var className = node.getAttribute('class') || '';
+        return className.split(/\s+/).filter(function (name) {
+            return name.indexOf(prefix + "-") === 0;
+        });
     }
-    ClassAttributor.keys = function (node) {
-        return (node.getAttribute('class') || '').split(/\s+/).map(function (name) {
-            return name.split('-').slice(0, -1).join('-');
-        });
-    };
-    ClassAttributor.prototype.add = function (node, value) {
-        if (!this.canAdd(node, value))
-            return false;
-        this.remove(node);
-        node.classList.add(this.keyName + "-" + value);
-        return true;
-    };
-    ClassAttributor.prototype.remove = function (node) {
-        var matches = _match(node, this.keyName);
-        matches.forEach(function (name) {
-            node.classList.remove(name);
-        });
-        if (node.classList.length === 0) {
-            node.removeAttribute('class');
+    var ClassAttributor = (function (_super) {
+        __extends(ClassAttributor, _super);
+        function ClassAttributor() {
+            return _super.apply(this, arguments) || this;
         }
-    };
-    ClassAttributor.prototype.value = function (node) {
-        var result = _match(node, this.keyName)[0] || '';
-        var value = result.slice(this.keyName.length + 1); // +1 for hyphen
-        return this.canAdd(node, value) ? value : '';
-    };
-    return ClassAttributor;
-}(Attributor));
-// export default ClassAttributor;
+        ClassAttributor.keys = function (node) {
+            return (node.getAttribute('class') || '').split(/\s+/).map(function (name) {
+                return name.split('-').slice(0, -1).join('-');
+            });
+        };
+        ClassAttributor.prototype.add = function (node, value) {
+            if (!this.canAdd(node, value))
+                return false;
+            this.remove(node);
+            node.classList.add(this.keyName + "-" + value);
+            return true;
+        };
+        ClassAttributor.prototype.remove = function (node) {
+            var matches = _match(node, this.keyName);
+            matches.forEach(function (name) {
+                node.classList.remove(name);
+            });
+            if (node.classList.length === 0) {
+                node.removeAttribute('class');
+            }
+        };
+        ClassAttributor.prototype.value = function (node) {
+            var result = _match(node, this.keyName)[0] || '';
+            var value = result.slice(this.keyName.length + 1); // +1 for hyphen
+            return this.canAdd(node, value) ? value : '';
+        };
+        return ClassAttributor;
+    }(Parchment.Attributor));
+    Parchment.ClassAttributor = ClassAttributor;
+    // export default ClassAttributor;
+})(Parchment || (Parchment = {}));
 //import Attributor from './attributor';
 //import ClassAttributor from './class';
 //import StyleAttributor from './style';
 //import { Formattable } from '../blot/abstract/blot';
 //import * as Registry from '../registry';
-var AttributorStore = (function () {
-    function AttributorStore(domNode) {
-        this.attributes = {};
-        this.domNode = domNode;
-        this.build();
-    }
-    AttributorStore.prototype.attribute = function (attribute, value) {
-        if (value) {
-            if (attribute.add(this.domNode, value)) {
-                if (attribute.value(this.domNode) != null) {
-                    this.attributes[attribute.attrName] = attribute;
+var Parchment;
+(function (Parchment) {
+    var AttributorStore = (function () {
+        function AttributorStore(domNode) {
+            this.attributes = {};
+            this.domNode = domNode;
+            this.build();
+        }
+        AttributorStore.prototype.attribute = function (attribute, value) {
+            if (value) {
+                if (attribute.add(this.domNode, value)) {
+                    if (attribute.value(this.domNode) != null) {
+                        this.attributes[attribute.attrName] = attribute;
+                    }
+                    else {
+                        delete this.attributes[attribute.attrName];
+                    }
                 }
-                else {
-                    delete this.attributes[attribute.attrName];
-                }
-            }
-        }
-        else {
-            attribute.remove(this.domNode);
-            delete this.attributes[attribute.attrName];
-        }
-    };
-    AttributorStore.prototype.build = function () {
-        var _this = this;
-        this.attributes = {};
-        var attributes = Attributor.keys(this.domNode);
-        var classes = ClassAttributor.keys(this.domNode);
-        var styles = StyleAttributor.keys(this.domNode);
-        attributes.concat(classes).concat(styles).forEach(function (name) {
-            var attr = Registry.query(name, Registry.Scope.ATTRIBUTE);
-            if (attr instanceof Attributor) {
-                _this.attributes[attr.attrName] = attr;
-            }
-        });
-    };
-    AttributorStore.prototype.copy = function (target) {
-        var _this = this;
-        Object.keys(this.attributes).forEach(function (key) {
-            var value = _this.attributes[key].value(_this.domNode);
-            target.format(key, value);
-        });
-    };
-    AttributorStore.prototype.move = function (target) {
-        var _this = this;
-        this.copy(target);
-        Object.keys(this.attributes).forEach(function (key) {
-            _this.attributes[key].remove(_this.domNode);
-        });
-        this.attributes = {};
-    };
-    AttributorStore.prototype.values = function () {
-        var _this = this;
-        return Object.keys(this.attributes).reduce(function (attributes, name) {
-            attributes[name] = _this.attributes[name].value(_this.domNode);
-            return attributes;
-        }, {});
-    };
-    return AttributorStore;
-}());
-// export default AttributorStore;
-///<reference path='./attributor.ts' />
-// import Attributor from './attributor';
-function camelize(name) {
-    var parts = name.split('-');
-    var rest = parts.slice(1).map(function (part) {
-        return part[0].toUpperCase() + part.slice(1);
-    }).join('');
-    return parts[0] + rest;
-}
-var StyleAttributor = (function (_super) {
-    __extends(StyleAttributor, _super);
-    function StyleAttributor() {
-        return _super.apply(this, arguments) || this;
-    }
-    StyleAttributor.keys = function (node) {
-        return (node.getAttribute('style') || '').split(';').map(function (value) {
-            var arr = value.split(':');
-            return arr[0].trim();
-        });
-    };
-    StyleAttributor.prototype.add = function (node, value) {
-        if (!this.canAdd(node, value))
-            return false;
-        node.style[camelize(this.keyName)] = value;
-        return true;
-    };
-    StyleAttributor.prototype.remove = function (node) {
-        node.style[camelize(this.keyName)] = '';
-        if (!node.getAttribute('style')) {
-            node.removeAttribute('style');
-        }
-    };
-    StyleAttributor.prototype.value = function (node) {
-        var value = node.style[camelize(this.keyName)];
-        return this.canAdd(node, value) ? value : '';
-    };
-    return StyleAttributor;
-}(Attributor));
-// export default StyleAttributor;
-// export default LinkedNode;
-///<reference path='./linked-node.ts' />
-// import LinkedNode from './linked-node';
-var LinkedList = (function () {
-    function LinkedList() {
-        this.head = this.tail = undefined;
-        this.length = 0;
-    }
-    LinkedList.prototype.append = function () {
-        var nodes = [];
-        for (var _i = 0; _i < arguments.length; _i++) {
-            nodes[_i - 0] = arguments[_i];
-        }
-        this.insertBefore(nodes[0], undefined);
-        if (nodes.length > 1) {
-            this.append.apply(this, nodes.slice(1));
-        }
-    };
-    LinkedList.prototype.contains = function (node) {
-        var cur, next = this.iterator();
-        while (cur = next()) {
-            if (cur === node)
-                return true;
-        }
-        return false;
-    };
-    LinkedList.prototype.insertBefore = function (node, refNode) {
-        node.next = refNode;
-        if (refNode != null) {
-            node.prev = refNode.prev;
-            if (refNode.prev != null) {
-                refNode.prev.next = node;
-            }
-            refNode.prev = node;
-            if (refNode === this.head) {
-                this.head = node;
-            }
-        }
-        else if (this.tail != null) {
-            this.tail.next = node;
-            node.prev = this.tail;
-            this.tail = node;
-        }
-        else {
-            node.prev = undefined;
-            this.head = this.tail = node;
-        }
-        this.length += 1;
-    };
-    LinkedList.prototype.offset = function (target) {
-        var index = 0, cur = this.head;
-        while (cur != null) {
-            if (cur === target)
-                return index;
-            index += cur.length();
-            cur = cur.next;
-        }
-        return -1;
-    };
-    LinkedList.prototype.remove = function (node) {
-        if (!this.contains(node))
-            return;
-        if (node.prev != null)
-            node.prev.next = node.next;
-        if (node.next != null)
-            node.next.prev = node.prev;
-        if (node === this.head)
-            this.head = node.next;
-        if (node === this.tail)
-            this.tail = node.prev;
-        this.length -= 1;
-    };
-    LinkedList.prototype.iterator = function (curNode) {
-        if (curNode === void 0) { curNode = this.head; }
-        // TODO use yield when we can
-        return function () {
-            var ret = curNode;
-            if (curNode != null)
-                curNode = curNode.next;
-            return ret;
-        };
-    };
-    LinkedList.prototype.find = function (index, inclusive) {
-        if (inclusive === void 0) { inclusive = false; }
-        var cur, next = this.iterator();
-        while (cur = next()) {
-            var length_1 = cur.length();
-            if (index < length_1 || (inclusive && index === length_1 && (cur.next == null || cur.next.length() !== 0))) {
-                return [cur, index];
-            }
-            index -= length_1;
-        }
-        return [null, 0];
-    };
-    LinkedList.prototype.forEach = function (callback) {
-        var cur, next = this.iterator();
-        while (cur = next()) {
-            callback(cur);
-        }
-    };
-    LinkedList.prototype.forEachAt = function (index, length, callback) {
-        if (length <= 0)
-            return;
-        var _a = this.find(index), startNode = _a[0], offset = _a[1];
-        var cur, curIndex = index - offset, next = this.iterator(startNode);
-        while ((cur = next()) && curIndex < index + length) {
-            var curLength = cur.length();
-            if (index > curIndex) {
-                callback(cur, index - curIndex, Math.min(length, curIndex + curLength - index));
             }
             else {
-                callback(cur, 0, Math.min(curLength, index + length - curIndex));
+                attribute.remove(this.domNode);
+                delete this.attributes[attribute.attrName];
             }
-            curIndex += curLength;
+        };
+        AttributorStore.prototype.build = function () {
+            var _this = this;
+            this.attributes = {};
+            var attributes = Parchment.Attributor.keys(this.domNode);
+            var classes = Parchment.ClassAttributor.keys(this.domNode);
+            var styles = Parchment.StyleAttributor.keys(this.domNode);
+            attributes.concat(classes).concat(styles).forEach(function (name) {
+                var attr = Parchment.query(name, Parchment.Scope.ATTRIBUTE);
+                if (attr instanceof Parchment.Attributor) {
+                    _this.attributes[attr.attrName] = attr;
+                }
+            });
+        };
+        AttributorStore.prototype.copy = function (target) {
+            var _this = this;
+            Object.keys(this.attributes).forEach(function (key) {
+                var value = _this.attributes[key].value(_this.domNode);
+                target.format(key, value);
+            });
+        };
+        AttributorStore.prototype.move = function (target) {
+            var _this = this;
+            this.copy(target);
+            Object.keys(this.attributes).forEach(function (key) {
+                _this.attributes[key].remove(_this.domNode);
+            });
+            this.attributes = {};
+        };
+        AttributorStore.prototype.values = function () {
+            var _this = this;
+            return Object.keys(this.attributes).reduce(function (attributes, name) {
+                attributes[name] = _this.attributes[name].value(_this.domNode);
+                return attributes;
+            }, {});
+        };
+        return AttributorStore;
+    }());
+    Parchment.AttributorStore = AttributorStore;
+    // export default AttributorStore;
+})(Parchment || (Parchment = {}));
+///<reference path='./attributor.ts' />
+// import Attributor from './attributor';
+var Parchment;
+(function (Parchment) {
+    function camelize(name) {
+        var parts = name.split('-');
+        var rest = parts.slice(1).map(function (part) {
+            return part[0].toUpperCase() + part.slice(1);
+        }).join('');
+        return parts[0] + rest;
+    }
+    var StyleAttributor = (function (_super) {
+        __extends(StyleAttributor, _super);
+        function StyleAttributor() {
+            return _super.apply(this, arguments) || this;
         }
-    };
-    LinkedList.prototype.map = function (callback) {
-        return this.reduce(function (memo, cur) {
-            memo.push(callback(cur));
+        StyleAttributor.keys = function (node) {
+            return (node.getAttribute('style') || '').split(';').map(function (value) {
+                var arr = value.split(':');
+                return arr[0].trim();
+            });
+        };
+        StyleAttributor.prototype.add = function (node, value) {
+            if (!this.canAdd(node, value))
+                return false;
+            node.style[camelize(this.keyName)] = value;
+            return true;
+        };
+        StyleAttributor.prototype.remove = function (node) {
+            node.style[camelize(this.keyName)] = '';
+            if (!node.getAttribute('style')) {
+                node.removeAttribute('style');
+            }
+        };
+        StyleAttributor.prototype.value = function (node) {
+            var value = node.style[camelize(this.keyName)];
+            return this.canAdd(node, value) ? value : '';
+        };
+        return StyleAttributor;
+    }(Parchment.Attributor));
+    Parchment.StyleAttributor = StyleAttributor;
+    // export default StyleAttributor;
+})(Parchment || (Parchment = {}));
+///<reference path='./linked-node.ts' />
+// import LinkedNode from './linked-node';
+var Parchment;
+(function (Parchment) {
+    var LinkedList = (function () {
+        function LinkedList() {
+            this.head = this.tail = undefined;
+            this.length = 0;
+        }
+        LinkedList.prototype.append = function () {
+            var nodes = [];
+            for (var _i = 0; _i < arguments.length; _i++) {
+                nodes[_i - 0] = arguments[_i];
+            }
+            this.insertBefore(nodes[0], undefined);
+            if (nodes.length > 1) {
+                this.append.apply(this, nodes.slice(1));
+            }
+        };
+        LinkedList.prototype.contains = function (node) {
+            var cur, next = this.iterator();
+            while (cur = next()) {
+                if (cur === node)
+                    return true;
+            }
+            return false;
+        };
+        LinkedList.prototype.insertBefore = function (node, refNode) {
+            node.next = refNode;
+            if (refNode != null) {
+                node.prev = refNode.prev;
+                if (refNode.prev != null) {
+                    refNode.prev.next = node;
+                }
+                refNode.prev = node;
+                if (refNode === this.head) {
+                    this.head = node;
+                }
+            }
+            else if (this.tail != null) {
+                this.tail.next = node;
+                node.prev = this.tail;
+                this.tail = node;
+            }
+            else {
+                node.prev = undefined;
+                this.head = this.tail = node;
+            }
+            this.length += 1;
+        };
+        LinkedList.prototype.offset = function (target) {
+            var index = 0, cur = this.head;
+            while (cur != null) {
+                if (cur === target)
+                    return index;
+                index += cur.length();
+                cur = cur.next;
+            }
+            return -1;
+        };
+        LinkedList.prototype.remove = function (node) {
+            if (!this.contains(node))
+                return;
+            if (node.prev != null)
+                node.prev.next = node.next;
+            if (node.next != null)
+                node.next.prev = node.prev;
+            if (node === this.head)
+                this.head = node.next;
+            if (node === this.tail)
+                this.tail = node.prev;
+            this.length -= 1;
+        };
+        LinkedList.prototype.iterator = function (curNode) {
+            if (curNode === void 0) { curNode = this.head; }
+            // TODO use yield when we can
+            return function () {
+                var ret = curNode;
+                if (curNode != null)
+                    curNode = curNode.next;
+                return ret;
+            };
+        };
+        LinkedList.prototype.find = function (index, inclusive) {
+            if (inclusive === void 0) { inclusive = false; }
+            var cur, next = this.iterator();
+            while (cur = next()) {
+                var length_1 = cur.length();
+                if (index < length_1 || (inclusive && index === length_1 && (cur.next == null || cur.next.length() !== 0))) {
+                    return [cur, index];
+                }
+                index -= length_1;
+            }
+            return [null, 0];
+        };
+        LinkedList.prototype.forEach = function (callback) {
+            var cur, next = this.iterator();
+            while (cur = next()) {
+                callback(cur);
+            }
+        };
+        LinkedList.prototype.forEachAt = function (index, length, callback) {
+            if (length <= 0)
+                return;
+            var _a = this.find(index), startNode = _a[0], offset = _a[1];
+            var cur, curIndex = index - offset, next = this.iterator(startNode);
+            while ((cur = next()) && curIndex < index + length) {
+                var curLength = cur.length();
+                if (index > curIndex) {
+                    callback(cur, index - curIndex, Math.min(length, curIndex + curLength - index));
+                }
+                else {
+                    callback(cur, 0, Math.min(curLength, index + length - curIndex));
+                }
+                curIndex += curLength;
+            }
+        };
+        LinkedList.prototype.map = function (callback) {
+            return this.reduce(function (memo, cur) {
+                memo.push(callback(cur));
+                return memo;
+            }, []);
+        };
+        LinkedList.prototype.reduce = function (callback, memo) {
+            var cur, next = this.iterator();
+            while (cur = next()) {
+                memo = callback(memo, cur);
+            }
             return memo;
-        }, []);
-    };
-    LinkedList.prototype.reduce = function (callback, memo) {
-        var cur, next = this.iterator();
-        while (cur = next()) {
-            memo = callback(memo, cur);
-        }
-        return memo;
-    };
-    return LinkedList;
-}());
+        };
+        return LinkedList;
+    }());
+    Parchment.LinkedList = LinkedList;
+})(Parchment || (Parchment = {}));
 //import LinkedList from '../../collection/linked-list';
 ///<reference path='../../collection/linked-list.ts' />
 // import LinkedNode from '../../collection/linked-node';
@@ -469,151 +488,155 @@ var LinkedList = (function () {
 // import { Blot, Parent, Formattable } from './blot';
 ///<reference path='../../registry.ts' />
 // import * as Registry from '../../registry';
-var ShadowBlot = (function () {
-    function ShadowBlot(domNode) {
-        this.domNode = domNode;
-        this.attach();
-    }
-    Object.defineProperty(ShadowBlot.prototype, "statics", {
-        // Hack for accessing inherited static methods
-        get: function () {
-            return this.constructor;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    ShadowBlot.create = function (value) {
-        if (this.tagName == null) {
-            throw new Registry.ParchmentError('Blot definition missing tagName');
+var Parchment;
+(function (Parchment) {
+    var ShadowBlot = (function () {
+        function ShadowBlot(domNode) {
+            this.domNode = domNode;
+            this.attach();
         }
-        var node;
-        if (Array.isArray(this.tagName)) {
-            if (typeof value === 'string') {
-                value = value.toUpperCase();
-                if (parseInt(value).toString() === value) {
-                    value = parseInt(value);
+        Object.defineProperty(ShadowBlot.prototype, "statics", {
+            // Hack for accessing inherited static methods
+            get: function () {
+                return this.constructor;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        ShadowBlot.create = function (value) {
+            if (this.tagName == null) {
+                throw new Parchment.ParchmentError('Blot definition missing tagName');
+            }
+            var node;
+            if (Array.isArray(this.tagName)) {
+                if (typeof value === 'string') {
+                    value = value.toUpperCase();
+                    if (parseInt(value).toString() === value) {
+                        value = parseInt(value);
+                    }
+                }
+                if (typeof value === 'number') {
+                    node = document.createElement(this.tagName[value - 1]);
+                }
+                else if (this.tagName.indexOf(value) > -1) {
+                    node = document.createElement(value);
+                }
+                else {
+                    node = document.createElement(this.tagName[0]);
                 }
             }
-            if (typeof value === 'number') {
-                node = document.createElement(this.tagName[value - 1]);
-            }
-            else if (this.tagName.indexOf(value) > -1) {
-                node = document.createElement(value);
-            }
             else {
-                node = document.createElement(this.tagName[0]);
+                node = document.createElement(this.tagName);
             }
-        }
-        else {
-            node = document.createElement(this.tagName);
-        }
-        if (this.className) {
-            node.classList.add(this.className);
-        }
-        return node;
-    };
-    ShadowBlot.prototype.attach = function () {
-        this.domNode[Registry.DATA_KEY] = { blot: this };
-    };
-    ShadowBlot.prototype.clone = function () {
-        var domNode = this.domNode.cloneNode();
-        return Registry.create(domNode);
-    };
-    ShadowBlot.prototype.detach = function () {
-        if (this.parent != null)
-            this.parent.removeChild(this);
-        delete this.domNode[Registry.DATA_KEY];
-    };
-    ShadowBlot.prototype.deleteAt = function (index, length) {
-        var blot = this.isolate(index, length);
-        blot.remove();
-    };
-    ShadowBlot.prototype.formatAt = function (index, length, name, value) {
-        var blot = this.isolate(index, length);
-        if (Registry.query(name, Registry.Scope.BLOT) != null && value) {
-            blot.wrap(name, value);
-        }
-        else if (Registry.query(name, Registry.Scope.ATTRIBUTE) != null) {
-            var parent_1 = Registry.create(this.statics.scope);
-            blot.wrap(parent_1);
-            parent_1.format(name, value);
-        }
-    };
-    ShadowBlot.prototype.insertAt = function (index, value, def) {
-        var blot = (def == null) ? Registry.create('text', value) : Registry.create(value, def);
-        var ref = this.split(index);
-        this.parent.insertBefore(blot, ref);
-    };
-    ShadowBlot.prototype.insertInto = function (parentBlot, refBlot) {
-        if (this.parent != null) {
-            this.parent.children.remove(this);
-        }
-        parentBlot.children.insertBefore(this, refBlot);
-        if (refBlot != null) {
-            var refDomNode = refBlot.domNode;
-        }
-        if (this.next == null || this.domNode.nextSibling != refDomNode) {
-            parentBlot.domNode.insertBefore(this.domNode, (typeof refDomNode !== 'undefined') ? refDomNode : null);
-        }
-        this.parent = parentBlot;
-    };
-    ShadowBlot.prototype.isolate = function (index, length) {
-        var target = this.split(index);
-        target.split(length);
-        return target;
-    };
-    ShadowBlot.prototype.length = function () {
-        return 1;
-    };
-    ;
-    ShadowBlot.prototype.offset = function (root) {
-        if (root === void 0) { root = this.parent; }
-        if (this.parent == null || this == root)
-            return 0;
-        return this.parent.children.offset(this) + this.parent.offset(root);
-    };
-    ShadowBlot.prototype.optimize = function () {
-        // TODO clean up once we use WeakMap
-        if (this.domNode[Registry.DATA_KEY] != null) {
-            delete this.domNode[Registry.DATA_KEY].mutations;
-        }
-    };
-    ShadowBlot.prototype.remove = function () {
-        if (this.domNode.parentNode != null) {
-            this.domNode.parentNode.removeChild(this.domNode);
-        }
-        this.detach();
-    };
-    ShadowBlot.prototype.replace = function (target) {
-        if (target.parent == null)
-            return;
-        target.parent.insertBefore(this, target.next);
-        target.remove();
-    };
-    ShadowBlot.prototype.replaceWith = function (name, value) {
-        var replacement = typeof name === 'string' ? Registry.create(name, value) : name;
-        replacement.replace(this);
-        return replacement;
-    };
-    ShadowBlot.prototype.split = function (index, force) {
-        return index === 0 ? this : this.next;
-    };
-    ShadowBlot.prototype.update = function (mutations) {
-        if (mutations === void 0) { mutations = []; }
-        // Nothing to do by default
-    };
-    ShadowBlot.prototype.wrap = function (name, value) {
-        var wrapper = typeof name === 'string' ? Registry.create(name, value) : name;
-        if (this.parent != null) {
-            this.parent.insertBefore(wrapper, this.next);
-        }
-        wrapper.appendChild(this);
-        return wrapper;
-    };
-    return ShadowBlot;
-}());
-ShadowBlot.blotName = 'abstract';
-// export default ShadowBlot;
+            if (this.className) {
+                node.classList.add(this.className);
+            }
+            return node;
+        };
+        ShadowBlot.prototype.attach = function () {
+            this.domNode[Parchment.DATA_KEY] = { blot: this };
+        };
+        ShadowBlot.prototype.clone = function () {
+            var domNode = this.domNode.cloneNode();
+            return Parchment.create(domNode);
+        };
+        ShadowBlot.prototype.detach = function () {
+            if (this.parent != null)
+                this.parent.removeChild(this);
+            delete this.domNode[Parchment.DATA_KEY];
+        };
+        ShadowBlot.prototype.deleteAt = function (index, length) {
+            var blot = this.isolate(index, length);
+            blot.remove();
+        };
+        ShadowBlot.prototype.formatAt = function (index, length, name, value) {
+            var blot = this.isolate(index, length);
+            if (Parchment.query(name, Parchment.Scope.BLOT) != null && value) {
+                blot.wrap(name, value);
+            }
+            else if (Parchment.query(name, Parchment.Scope.ATTRIBUTE) != null) {
+                var parent_1 = Parchment.create(this.statics.scope);
+                blot.wrap(parent_1);
+                parent_1.format(name, value);
+            }
+        };
+        ShadowBlot.prototype.insertAt = function (index, value, def) {
+            var blot = (def == null) ? Parchment.create('text', value) : Parchment.create(value, def);
+            var ref = this.split(index);
+            this.parent.insertBefore(blot, ref);
+        };
+        ShadowBlot.prototype.insertInto = function (parentBlot, refBlot) {
+            if (this.parent != null) {
+                this.parent.children.remove(this);
+            }
+            parentBlot.children.insertBefore(this, refBlot);
+            if (refBlot != null) {
+                var refDomNode = refBlot.domNode;
+            }
+            if (this.next == null || this.domNode.nextSibling != refDomNode) {
+                parentBlot.domNode.insertBefore(this.domNode, (typeof refDomNode !== 'undefined') ? refDomNode : null);
+            }
+            this.parent = parentBlot;
+        };
+        ShadowBlot.prototype.isolate = function (index, length) {
+            var target = this.split(index);
+            target.split(length);
+            return target;
+        };
+        ShadowBlot.prototype.length = function () {
+            return 1;
+        };
+        ;
+        ShadowBlot.prototype.offset = function (root) {
+            if (root === void 0) { root = this.parent; }
+            if (this.parent == null || this == root)
+                return 0;
+            return this.parent.children.offset(this) + this.parent.offset(root);
+        };
+        ShadowBlot.prototype.optimize = function () {
+            // TODO clean up once we use WeakMap
+            if (this.domNode[Parchment.DATA_KEY] != null) {
+                delete this.domNode[Parchment.DATA_KEY].mutations;
+            }
+        };
+        ShadowBlot.prototype.remove = function () {
+            if (this.domNode.parentNode != null) {
+                this.domNode.parentNode.removeChild(this.domNode);
+            }
+            this.detach();
+        };
+        ShadowBlot.prototype.replace = function (target) {
+            if (target.parent == null)
+                return;
+            target.parent.insertBefore(this, target.next);
+            target.remove();
+        };
+        ShadowBlot.prototype.replaceWith = function (name, value) {
+            var replacement = typeof name === 'string' ? Parchment.create(name, value) : name;
+            replacement.replace(this);
+            return replacement;
+        };
+        ShadowBlot.prototype.split = function (index, force) {
+            return index === 0 ? this : this.next;
+        };
+        ShadowBlot.prototype.update = function (mutations) {
+            if (mutations === void 0) { mutations = []; }
+            // Nothing to do by default
+        };
+        ShadowBlot.prototype.wrap = function (name, value) {
+            var wrapper = typeof name === 'string' ? Parchment.create(name, value) : name;
+            if (this.parent != null) {
+                this.parent.insertBefore(wrapper, this.next);
+            }
+            wrapper.appendChild(this);
+            return wrapper;
+        };
+        return ShadowBlot;
+    }());
+    ShadowBlot.blotName = 'abstract';
+    Parchment.ShadowBlot = ShadowBlot;
+    // export default ShadowBlot;
+})(Parchment || (Parchment = {}));
 ///<reference path='./blot.ts' />
 //import { Blot, Parent, Leaf } from './blot';
 ///<reference path='../../collection/linked-list.ts' />
@@ -622,699 +645,731 @@ ShadowBlot.blotName = 'abstract';
 //import ShadowBlot from './shadow';
 ///<reference path='../../registry.ts' />
 //import * as Registry from '../../registry';
-var ContainerBlot = (function (_super) {
-    __extends(ContainerBlot, _super);
-    function ContainerBlot() {
-        return _super.apply(this, arguments) || this;
-    }
-    ContainerBlot.prototype.appendChild = function (other) {
-        this.insertBefore(other);
-    };
-    ContainerBlot.prototype.attach = function () {
-        var _this = this;
-        _super.prototype.attach.call(this);
-        this.children = new LinkedList();
-        // Need to be reversed for if DOM nodes already in order
-        [].slice.call(this.domNode.childNodes).reverse().forEach(function (node) {
-            try {
-                var child = makeBlot(node);
-                _this.insertBefore(child, _this.children.head);
+var Parchment;
+(function (Parchment) {
+    var ContainerBlot = (function (_super) {
+        __extends(ContainerBlot, _super);
+        function ContainerBlot() {
+            return _super.apply(this, arguments) || this;
+        }
+        ContainerBlot.prototype.appendChild = function (other) {
+            this.insertBefore(other);
+        };
+        ContainerBlot.prototype.attach = function () {
+            var _this = this;
+            _super.prototype.attach.call(this);
+            this.children = new Parchment.LinkedList();
+            // Need to be reversed for if DOM nodes already in order
+            [].slice.call(this.domNode.childNodes).reverse().forEach(function (node) {
+                try {
+                    var child = makeBlot(node);
+                    _this.insertBefore(child, _this.children.head);
+                }
+                catch (err) {
+                    if (err instanceof Parchment.ParchmentError)
+                        return;
+                    else
+                        throw err;
+                }
+            });
+        };
+        ContainerBlot.prototype.deleteAt = function (index, length) {
+            if (index === 0 && length === this.length()) {
+                return this.remove();
             }
-            catch (err) {
-                if (err instanceof Registry.ParchmentError)
-                    return;
-                else
-                    throw err;
-            }
-        });
-    };
-    ContainerBlot.prototype.deleteAt = function (index, length) {
-        if (index === 0 && length === this.length()) {
-            return this.remove();
-        }
-        this.children.forEachAt(index, length, function (child, offset, length) {
-            child.deleteAt(offset, length);
-        });
-    };
-    ContainerBlot.prototype.descendant = function (criteria, index) {
-        var _a = this.children.find(index), child = _a[0], offset = _a[1];
-        if ((criteria.blotName == null && criteria(child)) ||
-            (criteria.blotName != null && child instanceof criteria)) {
-            return [child, offset];
-        }
-        else if (child instanceof ContainerBlot) {
-            return child.descendant(criteria, offset);
-        }
-        else {
-            return [null, -1];
-        }
-    };
-    ContainerBlot.prototype.descendants = function (criteria, index, length) {
-        if (index === void 0) { index = 0; }
-        if (length === void 0) { length = Number.MAX_VALUE; }
-        var descendants = [], lengthLeft = length;
-        this.children.forEachAt(index, length, function (child, index, length) {
+            this.children.forEachAt(index, length, function (child, offset, length) {
+                child.deleteAt(offset, length);
+            });
+        };
+        ContainerBlot.prototype.descendant = function (criteria, index) {
+            var _a = this.children.find(index), child = _a[0], offset = _a[1];
             if ((criteria.blotName == null && criteria(child)) ||
                 (criteria.blotName != null && child instanceof criteria)) {
-                descendants.push(child);
+                return [child, offset];
             }
-            if (child instanceof ContainerBlot) {
-                descendants = descendants.concat(child.descendants(criteria, index, lengthLeft));
-            }
-            lengthLeft -= length;
-        });
-        return descendants;
-    };
-    ContainerBlot.prototype.detach = function () {
-        this.children.forEach(function (child) {
-            child.detach();
-        });
-        _super.prototype.detach.call(this);
-    };
-    ContainerBlot.prototype.formatAt = function (index, length, name, value) {
-        this.children.forEachAt(index, length, function (child, offset, length) {
-            child.formatAt(offset, length, name, value);
-        });
-    };
-    ContainerBlot.prototype.insertAt = function (index, value, def) {
-        var _a = this.children.find(index), child = _a[0], offset = _a[1];
-        if (child) {
-            child.insertAt(offset, value, def);
-        }
-        else {
-            var blot = (def == null) ? Registry.create('text', value) : Registry.create(value, def);
-            this.appendChild(blot);
-        }
-    };
-    ContainerBlot.prototype.insertBefore = function (childBlot, refBlot) {
-        if (this.statics.allowedChildren != null && !this.statics.allowedChildren.some(function (child) {
-            return childBlot instanceof child;
-        })) {
-            throw new Registry.ParchmentError("Cannot insert " + childBlot.statics.blotName + " into " + this.statics.blotName);
-        }
-        childBlot.insertInto(this, refBlot);
-    };
-    ContainerBlot.prototype.length = function () {
-        return this.children.reduce(function (memo, child) {
-            return memo + child.length();
-        }, 0);
-    };
-    ContainerBlot.prototype.moveChildren = function (targetParent, refNode) {
-        this.children.forEach(function (child) {
-            targetParent.insertBefore(child, refNode);
-        });
-    };
-    ContainerBlot.prototype.optimize = function () {
-        _super.prototype.optimize.call(this);
-        if (this.children.length === 0) {
-            if (this.statics.defaultChild != null) {
-                var child = Registry.create(this.statics.defaultChild);
-                this.appendChild(child);
-                child.optimize();
+            else if (child instanceof ContainerBlot) {
+                return child.descendant(criteria, offset);
             }
             else {
-                this.remove();
+                return [null, -1];
             }
-        }
-    };
-    ContainerBlot.prototype.path = function (index, inclusive) {
-        if (inclusive === void 0) { inclusive = false; }
-        var _a = this.children.find(index, inclusive), child = _a[0], offset = _a[1];
-        var position = [[this, index]];
-        if (child instanceof ContainerBlot) {
-            return position.concat(child.path(offset, inclusive));
-        }
-        else if (child != null) {
-            position.push([child, offset]);
-        }
-        return position;
-    };
-    ContainerBlot.prototype.removeChild = function (child) {
-        this.children.remove(child);
-    };
-    ContainerBlot.prototype.replace = function (target) {
-        if (target instanceof ContainerBlot) {
-            target.moveChildren(this);
-        }
-        _super.prototype.replace.call(this, target);
-    };
-    ContainerBlot.prototype.split = function (index, force) {
-        if (force === void 0) { force = false; }
-        if (!force) {
-            if (index === 0)
-                return this;
-            if (index === this.length())
-                return this.next;
-        }
-        var after = this.clone();
-        this.parent.insertBefore(after, this.next);
-        this.children.forEachAt(index, this.length(), function (child, offset, length) {
-            child = child.split(offset, force);
-            after.appendChild(child);
-        });
-        return after;
-    };
-    ContainerBlot.prototype.unwrap = function () {
-        this.moveChildren(this.parent, this.next);
-        this.remove();
-    };
-    ContainerBlot.prototype.update = function (mutations) {
-        var _this = this;
-        var addedNodes = [], removedNodes = [];
-        mutations.forEach(function (mutation) {
-            if (mutation.target === _this.domNode && mutation.type === 'childList') {
-                addedNodes.push.apply(addedNodes, mutation.addedNodes);
-                removedNodes.push.apply(removedNodes, mutation.removedNodes);
-            }
-        });
-        removedNodes.forEach(function (node) {
-            if (node.parentNode != null &&
-                (document.body.compareDocumentPosition(node) & Node.DOCUMENT_POSITION_CONTAINED_BY)) {
-                // Node has not actually been removed
-                return;
-            }
-            var blot = Registry.find(node);
-            if (blot == null)
-                return;
-            if (blot.domNode.parentNode == null || blot.domNode.parentNode === _this.domNode) {
-                blot.detach();
-            }
-        });
-        addedNodes.filter(function (node) {
-            return node.parentNode == _this.domNode;
-        }).sort(function (a, b) {
-            if (a === b)
-                return 0;
-            if (a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING) {
-                return 1;
-            }
-            return -1;
-        }).forEach(function (node) {
-            var refBlot = null;
-            if (node.nextSibling != null) {
-                refBlot = Registry.find(node.nextSibling);
-            }
-            var blot = makeBlot(node);
-            if (blot.next != refBlot || blot.next == null) {
-                if (blot.parent != null) {
-                    blot.parent.removeChild(_this);
+        };
+        ContainerBlot.prototype.descendants = function (criteria, index, length) {
+            if (index === void 0) { index = 0; }
+            if (length === void 0) { length = Number.MAX_VALUE; }
+            var descendants = [], lengthLeft = length;
+            this.children.forEachAt(index, length, function (child, index, length) {
+                if ((criteria.blotName == null && criteria(child)) ||
+                    (criteria.blotName != null && child instanceof criteria)) {
+                    descendants.push(child);
                 }
-                _this.insertBefore(blot, refBlot);
-            }
-        });
-    };
-    return ContainerBlot;
-}(ShadowBlot));
-function makeBlot(node) {
-    var blot = Registry.find(node);
-    if (blot == null) {
-        try {
-            blot = Registry.create(node);
-        }
-        catch (e) {
-            blot = Registry.create(Registry.Scope.INLINE);
-            [].slice.call(node.childNodes).forEach(function (child) {
-                blot.domNode.appendChild(child);
+                if (child instanceof ContainerBlot) {
+                    descendants = descendants.concat(child.descendants(criteria, index, lengthLeft));
+                }
+                lengthLeft -= length;
             });
-            node.parentNode.replaceChild(blot.domNode, node);
-            blot.attach();
+            return descendants;
+        };
+        ContainerBlot.prototype.detach = function () {
+            this.children.forEach(function (child) {
+                child.detach();
+            });
+            _super.prototype.detach.call(this);
+        };
+        ContainerBlot.prototype.formatAt = function (index, length, name, value) {
+            this.children.forEachAt(index, length, function (child, offset, length) {
+                child.formatAt(offset, length, name, value);
+            });
+        };
+        ContainerBlot.prototype.insertAt = function (index, value, def) {
+            var _a = this.children.find(index), child = _a[0], offset = _a[1];
+            if (child) {
+                child.insertAt(offset, value, def);
+            }
+            else {
+                var blot = (def == null) ? Parchment.create('text', value) : Parchment.create(value, def);
+                this.appendChild(blot);
+            }
+        };
+        ContainerBlot.prototype.insertBefore = function (childBlot, refBlot) {
+            if (this.statics.allowedChildren != null && !this.statics.allowedChildren.some(function (child) {
+                return childBlot instanceof child;
+            })) {
+                throw new Parchment.ParchmentError("Cannot insert " + childBlot.statics.blotName + " into " + this.statics.blotName);
+            }
+            childBlot.insertInto(this, refBlot);
+        };
+        ContainerBlot.prototype.length = function () {
+            return this.children.reduce(function (memo, child) {
+                return memo + child.length();
+            }, 0);
+        };
+        ContainerBlot.prototype.moveChildren = function (targetParent, refNode) {
+            this.children.forEach(function (child) {
+                targetParent.insertBefore(child, refNode);
+            });
+        };
+        ContainerBlot.prototype.optimize = function () {
+            _super.prototype.optimize.call(this);
+            if (this.children.length === 0) {
+                if (this.statics.defaultChild != null) {
+                    var child = Parchment.create(this.statics.defaultChild);
+                    this.appendChild(child);
+                    child.optimize();
+                }
+                else {
+                    this.remove();
+                }
+            }
+        };
+        ContainerBlot.prototype.path = function (index, inclusive) {
+            if (inclusive === void 0) { inclusive = false; }
+            var _a = this.children.find(index, inclusive), child = _a[0], offset = _a[1];
+            var position = [[this, index]];
+            if (child instanceof ContainerBlot) {
+                return position.concat(child.path(offset, inclusive));
+            }
+            else if (child != null) {
+                position.push([child, offset]);
+            }
+            return position;
+        };
+        ContainerBlot.prototype.removeChild = function (child) {
+            this.children.remove(child);
+        };
+        ContainerBlot.prototype.replace = function (target) {
+            if (target instanceof ContainerBlot) {
+                target.moveChildren(this);
+            }
+            _super.prototype.replace.call(this, target);
+        };
+        ContainerBlot.prototype.split = function (index, force) {
+            if (force === void 0) { force = false; }
+            if (!force) {
+                if (index === 0)
+                    return this;
+                if (index === this.length())
+                    return this.next;
+            }
+            var after = this.clone();
+            this.parent.insertBefore(after, this.next);
+            this.children.forEachAt(index, this.length(), function (child, offset, length) {
+                child = child.split(offset, force);
+                after.appendChild(child);
+            });
+            return after;
+        };
+        ContainerBlot.prototype.unwrap = function () {
+            this.moveChildren(this.parent, this.next);
+            this.remove();
+        };
+        ContainerBlot.prototype.update = function (mutations) {
+            var _this = this;
+            var addedNodes = [], removedNodes = [];
+            mutations.forEach(function (mutation) {
+                if (mutation.target === _this.domNode && mutation.type === 'childList') {
+                    addedNodes.push.apply(addedNodes, mutation.addedNodes);
+                    removedNodes.push.apply(removedNodes, mutation.removedNodes);
+                }
+            });
+            removedNodes.forEach(function (node) {
+                if (node.parentNode != null &&
+                    (document.body.compareDocumentPosition(node) & Node.DOCUMENT_POSITION_CONTAINED_BY)) {
+                    // Node has not actually been removed
+                    return;
+                }
+                var blot = Parchment.find(node);
+                if (blot == null)
+                    return;
+                if (blot.domNode.parentNode == null || blot.domNode.parentNode === _this.domNode) {
+                    blot.detach();
+                }
+            });
+            addedNodes.filter(function (node) {
+                return node.parentNode == _this.domNode;
+            }).sort(function (a, b) {
+                if (a === b)
+                    return 0;
+                if (a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING) {
+                    return 1;
+                }
+                return -1;
+            }).forEach(function (node) {
+                var refBlot = null;
+                if (node.nextSibling != null) {
+                    refBlot = Parchment.find(node.nextSibling);
+                }
+                var blot = makeBlot(node);
+                if (blot.next != refBlot || blot.next == null) {
+                    if (blot.parent != null) {
+                        blot.parent.removeChild(_this);
+                    }
+                    _this.insertBefore(blot, refBlot);
+                }
+            });
+        };
+        return ContainerBlot;
+    }(Parchment.ShadowBlot));
+    Parchment.ContainerBlot = ContainerBlot;
+    function makeBlot(node) {
+        var blot = Parchment.find(node);
+        if (blot == null) {
+            try {
+                blot = Parchment.create(node);
+            }
+            catch (e) {
+                blot = Parchment.create(Parchment.Scope.INLINE);
+                [].slice.call(node.childNodes).forEach(function (child) {
+                    blot.domNode.appendChild(child);
+                });
+                node.parentNode.replaceChild(blot.domNode, node);
+                blot.attach();
+            }
         }
+        return blot;
     }
-    return blot;
-}
-// export default ContainerBlot;
+    // export default ContainerBlot;
+})(Parchment || (Parchment = {}));
 //import Attributor from '../../attributor/attributor';
 //import AttributorStore from '../../attributor/store';
 //import { Blot, Parent, Formattable } from './blot';
 //import ContainerBlot from './container';
 //import ShadowBlot from './shadow';
 //import * as Registry from '../../registry';
-var FormatBlot = (function (_super) {
-    __extends(FormatBlot, _super);
-    function FormatBlot() {
-        return _super.apply(this, arguments) || this;
-    }
-    FormatBlot.formats = function (domNode) {
-        if (typeof this.tagName === 'string') {
-            return true;
+var Parchment;
+(function (Parchment) {
+    var FormatBlot = (function (_super) {
+        __extends(FormatBlot, _super);
+        function FormatBlot() {
+            return _super.apply(this, arguments) || this;
         }
-        else if (Array.isArray(this.tagName)) {
-            return domNode.tagName.toLowerCase();
-        }
-        return undefined;
-    };
-    FormatBlot.prototype.attach = function () {
-        _super.prototype.attach.call(this);
-        this.attributes = new AttributorStore(this.domNode);
-    };
-    FormatBlot.prototype.format = function (name, value) {
-        var format = Registry.query(name);
-        if (format instanceof Attributor) {
-            this.attributes.attribute(format, value);
-        }
-        else if (value) {
-            if (format != null && (name !== this.statics.blotName || this.formats()[name] !== value)) {
-                this.replaceWith(name, value);
+        FormatBlot.formats = function (domNode) {
+            if (typeof this.tagName === 'string') {
+                return true;
             }
-        }
-    };
-    FormatBlot.prototype.formats = function () {
-        var formats = this.attributes.values();
-        var format = this.statics.formats(this.domNode);
-        if (format != null) {
-            formats[this.statics.blotName] = format;
-        }
-        return formats;
-    };
-    FormatBlot.prototype.replaceWith = function (name, value) {
-        var replacement = _super.prototype.replaceWith.call(this, name, value);
-        this.attributes.copy(replacement);
-        return replacement;
-    };
-    FormatBlot.prototype.update = function (mutations) {
-        var _this = this;
-        _super.prototype.update.call(this, mutations);
-        if (mutations.some(function (mutation) {
-            return mutation.target === _this.domNode && mutation.type === 'attributes';
-        })) {
-            this.attributes.build();
-        }
-    };
-    FormatBlot.prototype.wrap = function (name, value) {
-        var wrapper = _super.prototype.wrap.call(this, name, value);
-        if (wrapper instanceof FormatBlot && wrapper.statics.scope === this.statics.scope) {
-            this.attributes.move(wrapper);
-        }
-        return wrapper;
-    };
-    return FormatBlot;
-}(ContainerBlot));
-// export default FormatBlot;
+            else if (Array.isArray(this.tagName)) {
+                return domNode.tagName.toLowerCase();
+            }
+            return undefined;
+        };
+        FormatBlot.prototype.attach = function () {
+            _super.prototype.attach.call(this);
+            this.attributes = new Parchment.AttributorStore(this.domNode);
+        };
+        FormatBlot.prototype.format = function (name, value) {
+            var format = Parchment.query(name);
+            if (format instanceof Parchment.Attributor) {
+                this.attributes.attribute(format, value);
+            }
+            else if (value) {
+                if (format != null && (name !== this.statics.blotName || this.formats()[name] !== value)) {
+                    this.replaceWith(name, value);
+                }
+            }
+        };
+        FormatBlot.prototype.formats = function () {
+            var formats = this.attributes.values();
+            var format = this.statics.formats(this.domNode);
+            if (format != null) {
+                formats[this.statics.blotName] = format;
+            }
+            return formats;
+        };
+        FormatBlot.prototype.replaceWith = function (name, value) {
+            var replacement = _super.prototype.replaceWith.call(this, name, value);
+            this.attributes.copy(replacement);
+            return replacement;
+        };
+        FormatBlot.prototype.update = function (mutations) {
+            var _this = this;
+            _super.prototype.update.call(this, mutations);
+            if (mutations.some(function (mutation) {
+                return mutation.target === _this.domNode && mutation.type === 'attributes';
+            })) {
+                this.attributes.build();
+            }
+        };
+        FormatBlot.prototype.wrap = function (name, value) {
+            var wrapper = _super.prototype.wrap.call(this, name, value);
+            if (wrapper instanceof FormatBlot && wrapper.statics.scope === this.statics.scope) {
+                this.attributes.move(wrapper);
+            }
+            return wrapper;
+        };
+        return FormatBlot;
+    }(Parchment.ContainerBlot));
+    Parchment.FormatBlot = FormatBlot;
+    // export default FormatBlot;
+})(Parchment || (Parchment = {}));
 // import { Formattable, Leaf } from './blot';
 ///<reference path='./shadow.ts' />
 // import ShadowBlot from './shadow';
 ///<reference path='../../registry.ts' />
 // import * as Registry from '../../registry';
-var LeafBlot = (function (_super) {
-    __extends(LeafBlot, _super);
-    function LeafBlot(domNode) {
-        return _super.call(this, domNode) || this;
-    }
-    LeafBlot.value = function (domNode) {
-        return true;
-    };
-    LeafBlot.prototype.index = function (node, offset) {
-        if (node !== this.domNode)
-            return -1;
-        return Math.min(offset, 1);
-    };
-    LeafBlot.prototype.position = function (index, inclusive) {
-        var offset = [].indexOf.call(this.parent.domNode.childNodes, this.domNode);
-        if (index > 0)
-            offset += 1;
-        return [this.parent.domNode, offset];
-    };
-    LeafBlot.prototype.value = function () {
-        return _a = {}, _a[this.statics.blotName] = this.statics.value(this.domNode) || true, _a;
-        var _a;
-    };
-    return LeafBlot;
-}(ShadowBlot));
-LeafBlot.scope = Registry.Scope.INLINE_BLOT;
-// export default LeafBlot;
+var Parchment;
+(function (Parchment) {
+    var LeafBlot = (function (_super) {
+        __extends(LeafBlot, _super);
+        function LeafBlot(domNode) {
+            return _super.call(this, domNode) || this;
+        }
+        LeafBlot.value = function (domNode) {
+            return true;
+        };
+        LeafBlot.prototype.index = function (node, offset) {
+            if (node !== this.domNode)
+                return -1;
+            return Math.min(offset, 1);
+        };
+        LeafBlot.prototype.position = function (index, inclusive) {
+            var offset = [].indexOf.call(this.parent.domNode.childNodes, this.domNode);
+            if (index > 0)
+                offset += 1;
+            return [this.parent.domNode, offset];
+        };
+        LeafBlot.prototype.value = function () {
+            return _a = {}, _a[this.statics.blotName] = this.statics.value(this.domNode) || true, _a;
+            var _a;
+        };
+        return LeafBlot;
+    }(Parchment.ShadowBlot));
+    LeafBlot.scope = Parchment.Scope.INLINE_BLOT;
+    Parchment.LeafBlot = LeafBlot;
+    // export default LeafBlot;
+})(Parchment || (Parchment = {}));
 //import FormatBlot from './abstract/format';
 //import * as Registry from '../registry';
-var BlockBlot = (function (_super) {
-    __extends(BlockBlot, _super);
-    function BlockBlot() {
-        return _super.apply(this, arguments) || this;
-    }
-    BlockBlot.formats = function (domNode) {
-        var tagName = Registry.query(BlockBlot.blotName).tagName;
-        if (domNode.tagName === tagName)
-            return undefined;
-        return _super.formats.call(this, domNode);
-    };
-    BlockBlot.prototype.format = function (name, value) {
-        if (Registry.query(name, Registry.Scope.BLOCK) == null) {
-            return;
+var Parchment;
+(function (Parchment) {
+    var BlockBlot = (function (_super) {
+        __extends(BlockBlot, _super);
+        function BlockBlot() {
+            return _super.apply(this, arguments) || this;
         }
-        else if (name === this.statics.blotName && !value) {
-            this.replaceWith(BlockBlot.blotName);
-        }
-        else {
-            _super.prototype.format.call(this, name, value);
-        }
-    };
-    BlockBlot.prototype.formatAt = function (index, length, name, value) {
-        if (Registry.query(name, Registry.Scope.BLOCK) != null) {
-            this.format(name, value);
-        }
-        else {
-            _super.prototype.formatAt.call(this, index, length, name, value);
-        }
-    };
-    BlockBlot.prototype.insertAt = function (index, value, def) {
-        if (def == null || Registry.query(value, Registry.Scope.INLINE) != null) {
-            // Insert text or inline
-            _super.prototype.insertAt.call(this, index, value, def);
-        }
-        else {
-            var after = this.split(index);
-            var blot = Registry.create(value, def);
-            after.parent.insertBefore(blot, after);
-        }
-    };
-    return BlockBlot;
-}(FormatBlot));
-BlockBlot.blotName = 'block';
-BlockBlot.scope = Registry.Scope.BLOCK_BLOT;
-BlockBlot.tagName = ['P'];
-// export default BlockBlot;
+        BlockBlot.formats = function (domNode) {
+            var tagName = Parchment.query(BlockBlot.blotName).tagName;
+            if (domNode.tagName === tagName)
+                return undefined;
+            return _super.formats.call(this, domNode);
+        };
+        BlockBlot.prototype.format = function (name, value) {
+            if (Parchment.query(name, Parchment.Scope.BLOCK) == null) {
+                return;
+            }
+            else if (name === this.statics.blotName && !value) {
+                this.replaceWith(BlockBlot.blotName);
+            }
+            else {
+                _super.prototype.format.call(this, name, value);
+            }
+        };
+        BlockBlot.prototype.formatAt = function (index, length, name, value) {
+            if (Parchment.query(name, Parchment.Scope.BLOCK) != null) {
+                this.format(name, value);
+            }
+            else {
+                _super.prototype.formatAt.call(this, index, length, name, value);
+            }
+        };
+        BlockBlot.prototype.insertAt = function (index, value, def) {
+            if (def == null || Parchment.query(value, Parchment.Scope.INLINE) != null) {
+                // Insert text or inline
+                _super.prototype.insertAt.call(this, index, value, def);
+            }
+            else {
+                var after = this.split(index);
+                var blot = Parchment.create(value, def);
+                after.parent.insertBefore(blot, after);
+            }
+        };
+        return BlockBlot;
+    }(Parchment.FormatBlot));
+    BlockBlot.blotName = 'block';
+    BlockBlot.scope = Parchment.Scope.BLOCK_BLOT;
+    BlockBlot.tagName = ['P'];
+    Parchment.BlockBlot = BlockBlot;
+    // export default BlockBlot;
+})(Parchment || (Parchment = {}));
 // import { Formattable } from './abstract/blot';
 ///<reference path='./abstract/leaf.ts' />
 // import LeafBlot from './abstract/leaf';
-var EmbedBlot = (function (_super) {
-    __extends(EmbedBlot, _super);
-    function EmbedBlot() {
-        return _super.apply(this, arguments) || this;
-    }
-    EmbedBlot.formats = function (domNode) {
-        return undefined;
-    };
-    EmbedBlot.prototype.format = function (name, value) {
-        // super.formatAt wraps, which is what we want in general,
-        // but this allows subclasses to overwrite for formats
-        // that just apply to particular embeds
-        _super.prototype.formatAt.call(this, 0, this.length(), name, value);
-    };
-    EmbedBlot.prototype.formatAt = function (index, length, name, value) {
-        if (index === 0 && length === this.length()) {
-            this.format(name, value);
+var Parchment;
+(function (Parchment) {
+    var EmbedBlot = (function (_super) {
+        __extends(EmbedBlot, _super);
+        function EmbedBlot() {
+            return _super.apply(this, arguments) || this;
         }
-        else {
-            _super.prototype.formatAt.call(this, index, length, name, value);
-        }
-    };
-    EmbedBlot.prototype.formats = function () {
-        return this.statics.formats(this.domNode);
-    };
-    return EmbedBlot;
-}(LeafBlot));
-// export default EmbedBlot;
+        EmbedBlot.formats = function (domNode) {
+            return undefined;
+        };
+        EmbedBlot.prototype.format = function (name, value) {
+            // super.formatAt wraps, which is what we want in general,
+            // but this allows subclasses to overwrite for formats
+            // that just apply to particular embeds
+            _super.prototype.formatAt.call(this, 0, this.length(), name, value);
+        };
+        EmbedBlot.prototype.formatAt = function (index, length, name, value) {
+            if (index === 0 && length === this.length()) {
+                this.format(name, value);
+            }
+            else {
+                _super.prototype.formatAt.call(this, index, length, name, value);
+            }
+        };
+        EmbedBlot.prototype.formats = function () {
+            return this.statics.formats(this.domNode);
+        };
+        return EmbedBlot;
+    }(Parchment.LeafBlot));
+    Parchment.EmbedBlot = EmbedBlot;
+    // export default EmbedBlot;
+})(Parchment || (Parchment = {}));
 //import FormatBlot from './abstract/format';
 //import LeafBlot from './abstract/leaf';
 //import ShadowBlot from './abstract/shadow';
 //import * as Registry from '../registry';
-// Shallow object comparison
-function isEqual(obj1, obj2) {
-    if (Object.keys(obj1).length !== Object.keys(obj2).length)
-        return false;
-    for (var prop in obj1) {
-        if (obj1[prop] !== obj2[prop])
+var Parchment;
+(function (Parchment) {
+    // Shallow object comparison
+    function isEqual(obj1, obj2) {
+        if (Object.keys(obj1).length !== Object.keys(obj2).length)
             return false;
+        for (var prop in obj1) {
+            if (obj1[prop] !== obj2[prop])
+                return false;
+        }
+        return true;
     }
-    return true;
-}
-var InlineBlot = (function (_super) {
-    __extends(InlineBlot, _super);
-    function InlineBlot() {
-        return _super.apply(this, arguments) || this;
-    }
-    InlineBlot.formats = function (domNode) {
-        if (domNode.tagName === InlineBlot.tagName)
-            return undefined;
-        return _super.formats.call(this, domNode);
-    };
-    InlineBlot.prototype.format = function (name, value) {
-        var _this = this;
-        if (name === this.statics.blotName && !value) {
-            this.children.forEach(function (child) {
-                if (!(child instanceof FormatBlot)) {
-                    child = child.wrap(InlineBlot.blotName, true);
-                }
-                _this.attributes.copy(child);
-            });
-            this.unwrap();
+    var InlineBlot = (function (_super) {
+        __extends(InlineBlot, _super);
+        function InlineBlot() {
+            return _super.apply(this, arguments) || this;
         }
-        else {
-            _super.prototype.format.call(this, name, value);
-        }
-    };
-    InlineBlot.prototype.formatAt = function (index, length, name, value) {
-        if (this.formats()[name] != null || Registry.query(name, Registry.Scope.ATTRIBUTE)) {
-            var blot = this.isolate(index, length);
-            blot.format(name, value);
-        }
-        else {
-            _super.prototype.formatAt.call(this, index, length, name, value);
-        }
-    };
-    InlineBlot.prototype.optimize = function () {
-        _super.prototype.optimize.call(this);
-        var formats = this.formats();
-        if (Object.keys(formats).length === 0) {
-            return this.unwrap(); // unformatted span
-        }
-        var next = this.next;
-        if (next instanceof InlineBlot && next.prev === this && isEqual(formats, next.formats())) {
-            next.moveChildren(this);
-            next.remove();
-        }
-    };
-    return InlineBlot;
-}(FormatBlot));
-InlineBlot.blotName = 'inline';
-InlineBlot.scope = Registry.Scope.INLINE_BLOT;
-InlineBlot.tagName = ['SPAN'];
-// export default InlineBlot;
+        InlineBlot.formats = function (domNode) {
+            if (domNode.tagName === InlineBlot.tagName)
+                return undefined;
+            return _super.formats.call(this, domNode);
+        };
+        InlineBlot.prototype.format = function (name, value) {
+            var _this = this;
+            if (name === this.statics.blotName && !value) {
+                this.children.forEach(function (child) {
+                    if (!(child instanceof Parchment.FormatBlot)) {
+                        child = child.wrap(InlineBlot.blotName, true);
+                    }
+                    _this.attributes.copy(child);
+                });
+                this.unwrap();
+            }
+            else {
+                _super.prototype.format.call(this, name, value);
+            }
+        };
+        InlineBlot.prototype.formatAt = function (index, length, name, value) {
+            if (this.formats()[name] != null || Parchment.query(name, Parchment.Scope.ATTRIBUTE)) {
+                var blot = this.isolate(index, length);
+                blot.format(name, value);
+            }
+            else {
+                _super.prototype.formatAt.call(this, index, length, name, value);
+            }
+        };
+        InlineBlot.prototype.optimize = function () {
+            _super.prototype.optimize.call(this);
+            var formats = this.formats();
+            if (Object.keys(formats).length === 0) {
+                return this.unwrap(); // unformatted span
+            }
+            var next = this.next;
+            if (next instanceof InlineBlot && next.prev === this && isEqual(formats, next.formats())) {
+                next.moveChildren(this);
+                next.remove();
+            }
+        };
+        return InlineBlot;
+    }(Parchment.FormatBlot));
+    InlineBlot.blotName = 'inline';
+    InlineBlot.scope = Parchment.Scope.INLINE_BLOT;
+    InlineBlot.tagName = ['SPAN'];
+    Parchment.InlineBlot = InlineBlot;
+    // export default InlineBlot;
+})(Parchment || (Parchment = {}));
 // import { Blot } from './abstract/blot';
 // import ContainerBlot from './abstract/container';
 // import LinkedList from '../collection/linked-list';
 // import * as Registry from '../registry';
-var OBSERVER_CONFIG = {
-    attributes: true,
-    characterData: true,
-    characterDataOldValue: true,
-    childList: true,
-    subtree: true
-};
-var MAX_OPTIMIZE_ITERATIONS = 100;
-var ScrollBlot = (function (_super) {
-    __extends(ScrollBlot, _super);
-    function ScrollBlot(node) {
-        var _this = _super.call(this, node) || this;
-        _this.parent = null;
-        _this.observer = new MutationObserver(function (mutations) {
-            _this.update(mutations);
-        });
-        _this.observer.observe(_this.domNode, OBSERVER_CONFIG);
-        return _this;
-    }
-    ScrollBlot.prototype.detach = function () {
-        _super.prototype.detach.call(this);
-        this.observer.disconnect();
+var Parchment;
+(function (Parchment) {
+    var OBSERVER_CONFIG = {
+        attributes: true,
+        characterData: true,
+        characterDataOldValue: true,
+        childList: true,
+        subtree: true
     };
-    ScrollBlot.prototype.deleteAt = function (index, length) {
-        this.update();
-        if (index === 0 && length === this.length()) {
-            this.children.forEach(function (child) {
-                child.remove();
+    var MAX_OPTIMIZE_ITERATIONS = 100;
+    var ScrollBlot = (function (_super) {
+        __extends(ScrollBlot, _super);
+        function ScrollBlot(node) {
+            var _this = _super.call(this, node) || this;
+            _this.parent = null;
+            _this.observer = new MutationObserver(function (mutations) {
+                _this.update(mutations);
             });
+            _this.observer.observe(_this.domNode, OBSERVER_CONFIG);
+            return _this;
         }
-        else {
-            _super.prototype.deleteAt.call(this, index, length);
-        }
-    };
-    ScrollBlot.prototype.formatAt = function (index, length, name, value) {
-        this.update();
-        _super.prototype.formatAt.call(this, index, length, name, value);
-    };
-    ScrollBlot.prototype.insertAt = function (index, value, def) {
-        this.update();
-        _super.prototype.insertAt.call(this, index, value, def);
-    };
-    ScrollBlot.prototype.optimize = function (mutations) {
-        var _this = this;
-        if (mutations === void 0) { mutations = []; }
-        _super.prototype.optimize.call(this);
-        // We must modify mutations directly, cannot make copy and then modify
-        var records = [].slice.call(this.observer.takeRecords());
-        // Array.push currently seems to be implemented by a non-tail recursive function
-        // so we cannot just mutations.push.apply(mutations, this.observer.takeRecords());
-        while (records.length > 0)
-            mutations.push(records.pop());
-        // TODO use WeakMap
-        var mark = function (blot, markParent) {
-            if (markParent === void 0) { markParent = true; }
-            if (blot == null || blot === _this)
-                return;
-            if (blot.domNode.parentNode == null)
-                return;
-            if (blot.domNode[Registry.DATA_KEY].mutations == null) {
-                blot.domNode[Registry.DATA_KEY].mutations = [];
-            }
-            if (markParent)
-                mark(blot.parent);
+        ScrollBlot.prototype.detach = function () {
+            _super.prototype.detach.call(this);
+            this.observer.disconnect();
         };
-        var optimize = function (blot) {
-            if (blot.domNode[Registry.DATA_KEY] == null || blot.domNode[Registry.DATA_KEY].mutations == null) {
-                return;
-            }
-            if (blot instanceof ContainerBlot) {
-                blot.children.forEach(optimize);
-            }
-            blot.optimize();
-        };
-        var remaining = mutations;
-        for (var i = 0; remaining.length > 0; i += 1) {
-            if (i >= MAX_OPTIMIZE_ITERATIONS) {
-                throw new Error('[Parchment] Maximum optimize iterations reached');
-            }
-            remaining.forEach(function (mutation) {
-                var blot = Registry.find(mutation.target, true);
-                if (blot == null)
-                    return;
-                if (blot.domNode === mutation.target) {
-                    if (mutation.type === 'childList') {
-                        mark(Registry.find(mutation.previousSibling, false));
-                        [].forEach.call(mutation.addedNodes, function (node) {
-                            var child = Registry.find(node, false);
-                            mark(child, false);
-                            if (child instanceof ContainerBlot) {
-                                child.children.forEach(function (grandChild) {
-                                    mark(grandChild, false);
-                                });
-                            }
-                        });
-                    }
-                    else if (mutation.type === 'attributes') {
-                        mark(blot.prev);
-                    }
-                }
-                mark(blot);
-            });
-            this.children.forEach(optimize);
-            remaining = [].slice.call(this.observer.takeRecords());
-            records = remaining.slice();
-            while (records.length > 0)
-                mutations.push(records.pop());
-        }
-    };
-    ScrollBlot.prototype.update = function (mutations) {
-        var _this = this;
-        mutations = mutations || this.observer.takeRecords();
-        // TODO use WeakMap
-        mutations.map(function (mutation) {
-            var blot = Registry.find(mutation.target, true);
-            if (blot == null)
-                return;
-            if (blot.domNode[Registry.DATA_KEY].mutations == null) {
-                blot.domNode[Registry.DATA_KEY].mutations = [mutation];
-                return blot;
+        ScrollBlot.prototype.deleteAt = function (index, length) {
+            this.update();
+            if (index === 0 && length === this.length()) {
+                this.children.forEach(function (child) {
+                    child.remove();
+                });
             }
             else {
-                blot.domNode[Registry.DATA_KEY].mutations.push(mutation);
-                return null;
+                _super.prototype.deleteAt.call(this, index, length);
             }
-        }).forEach(function (blot) {
-            if (blot == null || blot === _this || blot.domNode[Registry.DATA_KEY] == null)
-                return;
-            blot.update(blot.domNode[Registry.DATA_KEY].mutations || []);
-        });
-        if (this.domNode[Registry.DATA_KEY].mutations != null) {
-            _super.prototype.update.call(this, this.domNode[Registry.DATA_KEY].mutations);
-        }
-        this.optimize(mutations);
-    };
-    return ScrollBlot;
-}(ContainerBlot));
-ScrollBlot.blotName = 'scroll';
-ScrollBlot.defaultChild = 'block';
-ScrollBlot.scope = Registry.Scope.BLOCK_BLOT;
-ScrollBlot.tagName = 'DIV';
-// export default ScrollBlot;
+        };
+        ScrollBlot.prototype.formatAt = function (index, length, name, value) {
+            this.update();
+            _super.prototype.formatAt.call(this, index, length, name, value);
+        };
+        ScrollBlot.prototype.insertAt = function (index, value, def) {
+            this.update();
+            _super.prototype.insertAt.call(this, index, value, def);
+        };
+        ScrollBlot.prototype.optimize = function (mutations) {
+            var _this = this;
+            if (mutations === void 0) { mutations = []; }
+            _super.prototype.optimize.call(this);
+            // We must modify mutations directly, cannot make copy and then modify
+            var records = [].slice.call(this.observer.takeRecords());
+            // Array.push currently seems to be implemented by a non-tail recursive function
+            // so we cannot just mutations.push.apply(mutations, this.observer.takeRecords());
+            while (records.length > 0)
+                mutations.push(records.pop());
+            // TODO use WeakMap
+            var mark = function (blot, markParent) {
+                if (markParent === void 0) { markParent = true; }
+                if (blot == null || blot === _this)
+                    return;
+                if (blot.domNode.parentNode == null)
+                    return;
+                if (blot.domNode[Parchment.DATA_KEY].mutations == null) {
+                    blot.domNode[Parchment.DATA_KEY].mutations = [];
+                }
+                if (markParent)
+                    mark(blot.parent);
+            };
+            var optimize = function (blot) {
+                if (blot.domNode[Parchment.DATA_KEY] == null || blot.domNode[Parchment.DATA_KEY].mutations == null) {
+                    return;
+                }
+                if (blot instanceof Parchment.ContainerBlot) {
+                    blot.children.forEach(optimize);
+                }
+                blot.optimize();
+            };
+            var remaining = mutations;
+            for (var i = 0; remaining.length > 0; i += 1) {
+                if (i >= MAX_OPTIMIZE_ITERATIONS) {
+                    throw new Error('[Parchment] Maximum optimize iterations reached');
+                }
+                remaining.forEach(function (mutation) {
+                    var blot = Parchment.find(mutation.target, true);
+                    if (blot == null)
+                        return;
+                    if (blot.domNode === mutation.target) {
+                        if (mutation.type === 'childList') {
+                            mark(Parchment.find(mutation.previousSibling, false));
+                            [].forEach.call(mutation.addedNodes, function (node) {
+                                var child = Parchment.find(node, false);
+                                mark(child, false);
+                                if (child instanceof Parchment.ContainerBlot) {
+                                    child.children.forEach(function (grandChild) {
+                                        mark(grandChild, false);
+                                    });
+                                }
+                            });
+                        }
+                        else if (mutation.type === 'attributes') {
+                            mark(blot.prev);
+                        }
+                    }
+                    mark(blot);
+                });
+                this.children.forEach(optimize);
+                remaining = [].slice.call(this.observer.takeRecords());
+                records = remaining.slice();
+                while (records.length > 0)
+                    mutations.push(records.pop());
+            }
+        };
+        ScrollBlot.prototype.update = function (mutations) {
+            var _this = this;
+            mutations = mutations || this.observer.takeRecords();
+            // TODO use WeakMap
+            mutations.map(function (mutation) {
+                var blot = Parchment.find(mutation.target, true);
+                if (blot == null)
+                    return;
+                if (blot.domNode[Parchment.DATA_KEY].mutations == null) {
+                    blot.domNode[Parchment.DATA_KEY].mutations = [mutation];
+                    return blot;
+                }
+                else {
+                    blot.domNode[Parchment.DATA_KEY].mutations.push(mutation);
+                    return null;
+                }
+            }).forEach(function (blot) {
+                if (blot == null || blot === _this || blot.domNode[Parchment.DATA_KEY] == null)
+                    return;
+                blot.update(blot.domNode[Parchment.DATA_KEY].mutations || []);
+            });
+            if (this.domNode[Parchment.DATA_KEY].mutations != null) {
+                _super.prototype.update.call(this, this.domNode[Parchment.DATA_KEY].mutations);
+            }
+            this.optimize(mutations);
+        };
+        return ScrollBlot;
+    }(Parchment.ContainerBlot));
+    ScrollBlot.blotName = 'scroll';
+    ScrollBlot.defaultChild = 'block';
+    ScrollBlot.scope = Parchment.Scope.BLOCK_BLOT;
+    ScrollBlot.tagName = 'DIV';
+    Parchment.ScrollBlot = ScrollBlot;
+    // export default ScrollBlot;
+})(Parchment || (Parchment = {}));
 //import { Blot, Leaf } from './abstract/blot';
 //import LeafBlot from './abstract/leaf';
 //import * as Registry from '../registry';
-var _TextBlot = (function (_super) {
-    __extends(_TextBlot, _super);
-    function _TextBlot(node) {
-        var _this = _super.call(this, node) || this;
-        _this.text = _this.statics.value(_this.domNode);
-        return _this;
-    }
-    _TextBlot.create = function (value) {
-        return document.createTextNode(value);
-    };
-    _TextBlot.value = function (domNode) {
-        return domNode.data;
-    };
-    _TextBlot.prototype.deleteAt = function (index, length) {
-        this.domNode.data = this.text = this.text.slice(0, index) + this.text.slice(index + length);
-    };
-    _TextBlot.prototype.index = function (node, offset) {
-        if (this.domNode === node) {
-            return offset;
+var Parchment;
+(function (Parchment) {
+    var TextBlot = (function (_super) {
+        __extends(TextBlot, _super);
+        function TextBlot(node) {
+            var _this = _super.call(this, node) || this;
+            _this.text = _this.statics.value(_this.domNode);
+            return _this;
         }
-        return -1;
-    };
-    _TextBlot.prototype.insertAt = function (index, value, def) {
-        if (def == null) {
-            this.text = this.text.slice(0, index) + value + this.text.slice(index);
-            this.domNode.data = this.text;
-        }
-        else {
-            _super.prototype.insertAt.call(this, index, value, def);
-        }
-    };
-    _TextBlot.prototype.length = function () {
-        return this.text.length;
-    };
-    _TextBlot.prototype.optimize = function () {
-        _super.prototype.optimize.call(this);
-        this.text = TextBlot.value(this.domNode);
-        if (this.text.length === 0) {
-            this.remove();
-        }
-        else if (this.next instanceof TextBlot && this.next.prev === this) {
-            this.insertAt(this.length(), this.next.value());
-            this.next.remove();
-        }
-    };
-    _TextBlot.prototype.position = function (index, inclusive) {
-        if (inclusive === void 0) { inclusive = false; }
-        return [this.domNode, index];
-    };
-    _TextBlot.prototype.split = function (index, force) {
-        if (force === void 0) { force = false; }
-        if (!force) {
-            if (index === 0)
-                return this;
-            if (index === this.length())
-                return this.next;
-        }
-        var after = Registry.create(this.domNode.splitText(index));
-        this.parent.insertBefore(after, this.next);
-        this.text = this.statics.value(this.domNode);
-        return after;
-    };
-    _TextBlot.prototype.update = function (mutations) {
-        var _this = this;
-        if (mutations.some(function (mutation) {
-            return mutation.type === 'characterData' && mutation.target === _this.domNode;
-        })) {
+        TextBlot.create = function (value) {
+            return document.createTextNode(value);
+        };
+        TextBlot.value = function (domNode) {
+            return domNode.data;
+        };
+        TextBlot.prototype.deleteAt = function (index, length) {
+            this.domNode.data = this.text = this.text.slice(0, index) + this.text.slice(index + length);
+        };
+        TextBlot.prototype.index = function (node, offset) {
+            if (this.domNode === node) {
+                return offset;
+            }
+            return -1;
+        };
+        TextBlot.prototype.insertAt = function (index, value, def) {
+            if (def == null) {
+                this.text = this.text.slice(0, index) + value + this.text.slice(index);
+                this.domNode.data = this.text;
+            }
+            else {
+                _super.prototype.insertAt.call(this, index, value, def);
+            }
+        };
+        TextBlot.prototype.length = function () {
+            return this.text.length;
+        };
+        TextBlot.prototype.optimize = function () {
+            _super.prototype.optimize.call(this);
             this.text = TextBlot.value(this.domNode);
-        }
-    };
-    _TextBlot.prototype.value = function () {
-        return this.text;
-    };
-    return _TextBlot;
-}(LeafBlot));
-_TextBlot.blotName = 'text';
-_TextBlot.scope = Registry.Scope.INLINE_BLOT;
-// export default TextBlot;
+            if (this.text.length === 0) {
+                this.remove();
+            }
+            else if (this.next instanceof TextBlot && this.next.prev === this) {
+                this.insertAt(this.length(), this.next.value());
+                this.next.remove();
+            }
+        };
+        TextBlot.prototype.position = function (index, inclusive) {
+            if (inclusive === void 0) { inclusive = false; }
+            return [this.domNode, index];
+        };
+        TextBlot.prototype.split = function (index, force) {
+            if (force === void 0) { force = false; }
+            if (!force) {
+                if (index === 0)
+                    return this;
+                if (index === this.length())
+                    return this.next;
+            }
+            var after = Parchment.create(this.domNode.splitText(index));
+            this.parent.insertBefore(after, this.next);
+            this.text = this.statics.value(this.domNode);
+            return after;
+        };
+        TextBlot.prototype.update = function (mutations) {
+            var _this = this;
+            if (mutations.some(function (mutation) {
+                return mutation.type === 'characterData' && mutation.target === _this.domNode;
+            })) {
+                this.text = TextBlot.value(this.domNode);
+            }
+        };
+        TextBlot.prototype.value = function () {
+            return this.text;
+        };
+        return TextBlot;
+    }(Parchment.LeafBlot));
+    TextBlot.blotName = 'text';
+    TextBlot.scope = Parchment.Scope.INLINE_BLOT;
+    Parchment.TextBlot = TextBlot;
+    // export default TextBlot;
+})(Parchment || (Parchment = {}));
 //import { Blot } from './blot/abstract/blot';
 //import ContainerBlot from './blot/abstract/container';
 //import FormatBlot from './blot/abstract/format';
@@ -1390,14 +1445,14 @@ var Embed = (function (_super) {
         return _super.call(this, domNode) || this;
     }
     return Embed;
-}(EmbedBlot));
+}(Parchment.EmbedBlot));
 var TextBlot = (function (_super) {
     __extends(TextBlot, _super);
     function TextBlot() {
         return _super.apply(this, arguments) || this;
     }
     return TextBlot;
-}(_TextBlot));
+}(Parchment.TextBlot));
 //import Embed from './embed';
 ///<reference path='./text.ts' />
 //import Text from './text';
@@ -1424,7 +1479,7 @@ var Inline = (function (_super) {
         }
     };
     Inline.prototype.formatAt = function (index, length, name, value) {
-        if (Inline.compare(this.statics.blotName, name) < 0 && Registry.query(name, Registry.Scope.BLOT)) {
+        if (Inline.compare(this.statics.blotName, name) < 0 && Parchment.query(name, Parchment.Scope.BLOT)) {
             var blot = this.isolate(index, length);
             if (value) {
                 blot.wrap(name, value);
@@ -1444,7 +1499,7 @@ var Inline = (function (_super) {
         }
     };
     return Inline;
-}(InlineBlot));
+}(Parchment.InlineBlot));
 Inline.order = [
     'cursor', 'inline',
     'code', 'underline', 'strike', 'italic', 'bold', 'script',
@@ -1476,13 +1531,13 @@ var BlockEmbed = (function (_super) {
     }
     BlockEmbed.prototype.attach = function () {
         _super.prototype.attach.call(this);
-        this.attributes = new AttributorStore(this.domNode);
+        this.attributes = new Parchment.AttributorStore(this.domNode);
     };
     BlockEmbed.prototype.delta = function () {
         return new Delta().insert(this.value(), extend(this.formats(), this.attributes.values()));
     };
     BlockEmbed.prototype.format = function (name, value) {
-        var attribute = Registry.query(name, /*Parchment*/ Registry.Scope.BLOCK_ATTRIBUTE);
+        var attribute = Parchment.query(name, Parchment.Scope.BLOCK_ATTRIBUTE);
         if (attribute != null) {
             this.attributes.attribute(attribute, value);
         }
@@ -1492,7 +1547,7 @@ var BlockEmbed = (function (_super) {
     };
     BlockEmbed.prototype.insertAt = function (index, value, def) {
         if (typeof value === 'string' && value.endsWith('\n')) {
-            var block = Registry.create(Block.blotName);
+            var block = Parchment.create(Block.blotName);
             this.parent.insertBefore(block, index === 0 ? this : this.next);
             block.insertAt(0, value.slice(0, -1));
         }
@@ -1502,7 +1557,7 @@ var BlockEmbed = (function (_super) {
     };
     return BlockEmbed;
 }(Embed));
-BlockEmbed.scope = Registry.Scope.BLOCK_BLOT;
+BlockEmbed.scope = Parchment.Scope.BLOCK_BLOT;
 // It is important for cursor behavior BlockEmbeds use tags that are block level elements
 var Block = (function (_super) {
     __extends(Block, _super);
@@ -1513,7 +1568,7 @@ var Block = (function (_super) {
     }
     Block.prototype.delta = function () {
         if (this.cache.delta == null) {
-            this.cache.delta = this.descendants(/*Parchment.Leaf*/ LeafBlot).reduce(function (delta, leaf) {
+            this.cache.delta = this.descendants(Parchment.LeafBlot).reduce(function (delta, leaf) {
                 if (leaf.length() === 0) {
                     return delta;
                 }
@@ -1531,7 +1586,7 @@ var Block = (function (_super) {
     Block.prototype.formatAt = function (index, length, name, value) {
         if (length <= 0)
             return;
-        if (Registry.query(name, /*Parchment*/ Registry.Scope.BLOCK)) {
+        if (Parchment.query(name, Parchment.Scope.BLOCK)) {
             if (index + length === this.length()) {
                 this.format(name, value);
             }
@@ -1613,7 +1668,7 @@ var Block = (function (_super) {
         }
     };
     return Block;
-}(/*Parchment.*/ BlockBlot));
+}(Parchment.BlockBlot));
 Block.blotName = 'block';
 Block.tagName = 'P';
 Block.defaultChild = 'break';
@@ -1669,7 +1724,7 @@ var Container = (function (_super) {
         return _super.apply(this, arguments) || this;
     }
     return Container;
-}(/*Parchment.*/ ContainerBlot));
+}(Parchment.ContainerBlot));
 Container.allowedChildren = [Block, BlockEmbed, Container];
 // export default Container; 
 var levels = ['error', 'warn', 'log', 'info'];
@@ -1919,7 +1974,7 @@ var Scroll = (function (_super) {
         this.optimize();
     };
     Scroll.prototype.insertBefore = function (blot, ref) {
-        if (blot.statics.scope === Registry.Scope.INLINE_BLOT) {
+        if (blot.statics.scope === Parchment.Scope.INLINE_BLOT) {
             var wrapper = Parchment.create(this.statics.defaultChild);
             wrapper.appendChild(blot);
             blot = wrapper;
@@ -1984,7 +2039,7 @@ var Scroll = (function (_super) {
         }
     };
     return Scroll;
-}(/*Parchment.*/ ScrollBlot));
+}(Parchment.ScrollBlot));
 Scroll.blotName = 'scroll';
 Scroll.className = 'ql-editor';
 Scroll.tagName = 'DIV';
@@ -2126,6 +2181,7 @@ CodeBlock.TAB = '  ';
 var Editor = (function () {
     function Editor(scroll) {
         this.scroll = scroll;
+        // this.scroll = scroll;
         this.delta = this.getDelta();
     }
     Editor.prototype.applyDelta = function (delta) {
@@ -2152,7 +2208,7 @@ var Editor = (function () {
                     var _a = _this.scroll.line(index), line = _a[0], offset = _a[1];
                     var formats = extend({}, bubbleFormats(line));
                     if (line instanceof Block) {
-                        var leaf = line.descendant(/*Parchment.*/ LeafBlot, offset)[0];
+                        var leaf = line.descendant(Parchment.LeafBlot, offset)[0];
                         formats = extend(formats, bubbleFormats(leaf));
                     }
                     attributes = lib.attributes.diff(formats, attributes) || {};
@@ -2233,14 +2289,14 @@ var Editor = (function () {
                 if (blot instanceof Block) {
                     lines.push(blot);
                 }
-                else if (blot instanceof LeafBlot) {
+                else if (blot instanceof Parchment.LeafBlot) {
                     leaves.push(blot);
                 }
             });
         }
         else {
             lines = this.scroll.lines(index, length);
-            leaves = this.scroll.descendants(/*Parchment.*/ LeafBlot, index, length);
+            leaves = this.scroll.descendants(Parchment.LeafBlot, index, length);
         }
         var formatsArr = [lines, leaves].map(function (blots) {
             if (blots.length === 0)
@@ -2315,7 +2371,7 @@ var Editor = (function () {
             var textBlot = Parchment.find(mutations[0].target);
             var formats_1 = bubbleFormats(textBlot);
             var index = textBlot.offset(this.scroll);
-            var oldValue = mutations[0].oldValue.replace(CursorBlot.CONTENTS, '');
+            var oldValue = mutations[0].oldValue.replace(Cursor.CONTENTS, '');
             var oldText = new Delta().insert(oldValue);
             var newText = new Delta().insert(textBlot.value());
             var diffDelta = new Delta().retain(index).concat(oldText.diff(newText, cursorIndex));
@@ -2421,7 +2477,7 @@ var Selection = (function () {
         this.root.addEventListener('compositionend', function () {
             _this.composing = false;
         });
-        this.cursor = Registry.create('cursor', this);
+        this.cursor = Parchment.create('cursor', this);
         // savedRange is last non-null range
         this.lastRange = this.savedRange = new Range(0, 0);
         ['keyup', 'mouseup', 'mouseleave', 'touchend', 'touchleave', 'focus', 'blur'].forEach(function (eventName) {
@@ -2588,12 +2644,12 @@ var Selection = (function () {
         }
         var indexes = positions.map(function (position) {
             var node = position[0], offset = position[1];
-            var blot = Registry.find(node, true);
+            var blot = Parchment.find(node, true);
             var index = blot.offset(_this.scroll);
             if (offset === 0) {
                 return index;
             }
-            else if (blot instanceof ContainerBlot) {
+            else if (blot instanceof Parchment.ContainerBlot) {
                 return index + blot.length();
             }
             else {
@@ -2784,7 +2840,7 @@ var Quill = (function () {
         this.container.innerHTML = '';
         this.root = this.addContainer('ql-editor');
         this.emitter = new Emitter();
-        this.scroll = Registry.create(this.root, {
+        this.scroll = Parchment.create(this.root, {
             emitter: this.emitter,
             whitelist: this.options.formats
         });
@@ -2847,7 +2903,7 @@ var Quill = (function () {
             this.imports[path] = target;
             if ((path.startsWith('blots/') || path.startsWith('formats/')) &&
                 target.blotName !== 'abstract') {
-                /*Parchment*/ Registry.register(target);
+                Parchment.register(target);
             }
         }
     };
@@ -2896,7 +2952,7 @@ var Quill = (function () {
             if (range == null) {
                 return change;
             }
-            else if (Registry.query(name, /*Parchment*/ Registry.Scope.BLOCK)) {
+            else if (Parchment.query(name, Parchment.Scope.BLOCK)) {
                 change = _this.editor.formatLine(range.index, range.length, (_a = {}, _a[name] = value, _a));
             }
             else if (range.length === 0) {
@@ -3231,12 +3287,12 @@ function shiftRange(range, index, length, source) {
 // export { expandConfig, overload, Quill as default }; 
 // import Parchment from 'parchment';
 var _config = {
-    scope: /*Parchment*/ Registry.Scope.BLOCK,
+    scope: Parchment.Scope.BLOCK,
     whitelist: ['right', 'center', 'justify']
 };
-var AlignAttribute = new Attributor('align', 'align', _config);
-var AlignClass = new ClassAttributor('align', 'ql-align', _config);
-var AlignStyle = new StyleAttributor('align', 'text-align', _config);
+var AlignAttribute = new Parchment.Attributor('align', 'align', _config);
+var AlignClass = new Parchment.ClassAttributor('align', 'ql-align', _config);
+var AlignStyle = new Parchment.StyleAttributor('align', 'text-align', _config);
 // export { AlignAttribute, AlignClass, AlignStyle }; 
 // import Parchment from 'parchment';
 var ColorAttributor = (function (_super) {
@@ -3254,39 +3310,39 @@ var ColorAttributor = (function (_super) {
         }).join('');
     };
     return ColorAttributor;
-}(/*Parchment.Attributor.Style*/ StyleAttributor));
-var ColorClass = new Attributor('color', 'ql-color', {
-    scope: /*Parchment*/ Registry.Scope.INLINE
+}(Parchment.StyleAttributor));
+var ColorClass = new Parchment.ClassAttributor('color', 'ql-color', {
+    scope: Parchment.Scope.INLINE
 });
 var ColorStyle = new ColorAttributor('color', 'color', {
-    scope: /*Parchment*/ Registry.Scope.INLINE
+    scope: Parchment.Scope.INLINE
 });
 // export { ColorAttributor, ColorClass, ColorStyle }; 
 //import Parchment from 'parchment';
 ///<reference path='./color.ts' />
 //import { ColorAttributor } from './color';
-var BackgroundClass = new Attributor('background', 'ql-bg', {
-    scope: /*Parchment*/ Registry.Scope.INLINE
+var BackgroundClass = new Parchment.ClassAttributor('background', 'ql-bg', {
+    scope: Parchment.Scope.INLINE
 });
 var BackgroundStyle = new ColorAttributor('background', 'background-color', {
-    scope: /*Parchment*/ Registry.Scope.INLINE
+    scope: Parchment.Scope.INLINE
 });
 //export { BackgroundClass, BackgroundStyle }; 
 // import Parchment from 'parchment';
 var config = {
-    scope: /*Parchment*/ Registry.Scope.BLOCK,
+    scope: Parchment.Scope.BLOCK,
     whitelist: ['rtl']
 };
-var DirectionAttribute = new Attributor('direction', 'dir', config);
-var DirectionClass = new ClassAttributor('direction', 'ql-direction', config);
-var DirectionStyle = new StyleAttributor('direction', 'direction', config);
+var DirectionAttribute = new Parchment.Attributor('direction', 'dir', config);
+var DirectionClass = new Parchment.ClassAttributor('direction', 'ql-direction', config);
+var DirectionStyle = new Parchment.StyleAttributor('direction', 'direction', config);
 // export { DirectionAttribute, DirectionClass, DirectionStyle }; 
 // import Parchment from 'parchment';
 var font_config = {
-    scope: /*Parchment*/ Registry.Scope.INLINE,
+    scope: Parchment.Scope.INLINE,
     whitelist: ['serif', 'monospace']
 };
-var FontClass = new ClassAttributor('font', 'ql-font', font_config);
+var FontClass = new Parchment.ClassAttributor('font', 'ql-font', font_config);
 var FontStyleAttributor = (function (_super) {
     __extends(FontStyleAttributor, _super);
     function FontStyleAttributor() {
@@ -3296,16 +3352,16 @@ var FontStyleAttributor = (function (_super) {
         return _super.prototype.value.call(this, node).replace(/["']/g, '');
     };
     return FontStyleAttributor;
-}(/*Parchment.Attributor.Style*/ StyleAttributor));
+}(Parchment.StyleAttributor));
 var FontStyle = new FontStyleAttributor('font', 'font-family', font_config);
 // export { FontStyle, FontClass }; 
 // import Parchment from 'parchment';
-var SizeClass = new ClassAttributor('size', 'ql-size', {
-    scope: /*Parchment*/ Registry.Scope.INLINE,
+var SizeClass = new Parchment.ClassAttributor('size', 'ql-size', {
+    scope: Parchment.Scope.INLINE,
     whitelist: ['small', 'large', 'huge']
 });
-var SizeStyle = new StyleAttributor('size', 'font-size', {
-    scope: /*Parchment*/ Registry.Scope.INLINE,
+var SizeStyle = new Parchment.StyleAttributor('size', 'font-size', {
+    scope: Parchment.Scope.INLINE,
     whitelist: ['10px', '18px', '32px']
 });
 // export { SizeClass, SizeStyle }; 
@@ -3497,12 +3553,12 @@ function matchAlias(format, node, delta) {
     var _a;
 }
 function matchAttributor(node, delta) {
-    var attributes = Attributor.keys(node);
-    var classes = ClassAttributor.keys(node);
-    var styles = StyleAttributor.keys(node);
+    var attributes = Parchment.Attributor.keys(node);
+    var classes = Parchment.ClassAttributor.keys(node);
+    var styles = Parchment.StyleAttributor.keys(node);
     var formats = {};
     attributes.concat(classes).concat(styles).forEach(function (name) {
-        var attr = Registry.query(name, /*Parchment*/ Registry.Scope.ATTRIBUTE);
+        var attr = Parchment.query(name, Parchment.Scope.ATTRIBUTE);
         if (attr != null) {
             formats[attr.attrName] = attr.value(node);
             if (formats[attr.attrName])
@@ -3523,10 +3579,10 @@ function matchAttributor(node, delta) {
     return delta;
 }
 function matchBlot(node, delta) {
-    var match = Registry.query(node);
+    var match = Parchment.query(node);
     if (match == null)
         return delta;
-    if (match.prototype instanceof EmbedBlot) {
+    if (match.prototype instanceof Parchment.EmbedBlot) {
         var embed = {};
         var value = match.value(node);
         if (value != null) {
@@ -3811,8 +3867,8 @@ var Keyboard = (function (_super) {
             var _a = _this.quill.scroll.line(range.index), line = _a[0], offset = _a[1];
             var _b = _this.quill.scroll.leaf(range.index), leafStart = _b[0], offsetStart = _b[1];
             var _c = range.length === 0 ? [leafStart, offsetStart] : _this.quill.scroll.leaf(range.index + range.length), leafEnd = _c[0], offsetEnd = _c[1];
-            var prefixText = leafStart instanceof Parchment.Text ? leafStart.value().slice(0, offsetStart) : '';
-            var suffixText = leafEnd instanceof Parchment.Text ? leafEnd.value().slice(offsetEnd) : '';
+            var prefixText = leafStart instanceof Parchment.TextBlot ? leafStart.value().slice(0, offsetStart) : '';
+            var suffixText = leafEnd instanceof Parchment.TextBlot ? leafEnd.value().slice(offsetEnd) : '';
             var curContext = {
                 collapsed: range.length === 0,
                 empty: range.length === 0 && line.length() <= 1,
@@ -4150,7 +4206,7 @@ Quill.register({
     'modules/history': History,
     'modules/keyboard': Keyboard
 });
-/*Parchment*/ Registry.register(Block, Break, Cursor, Inline, Scroll, TextBlot);
+Parchment.register(Block, Break, Cursor, Inline, Scroll, TextBlot);
 // module.exports = Quill; 
 ///<reference path='../blots/block.ts' />
 // import Block from '../blots/block';
@@ -4323,9 +4379,9 @@ var IdentAttributor = (function (_super) {
         return parseInt(_super.prototype.value.call(this, node)) || undefined; // Don't return NaN
     };
     return IdentAttributor;
-}(/*Parchment.Attributor.Class*/ ClassAttributor));
+}(Parchment.ClassAttributor));
 var IndentClass = new IdentAttributor('indent', 'ql-indent', {
-    scope: /*Parchment*/ Registry.Scope.BLOCK,
+    scope: Parchment.Scope.BLOCK,
     whitelist: [1, 2, 3, 4, 5, 6, 7, 8]
 });
 // export { IndentClass }; 
@@ -4444,7 +4500,7 @@ var List = (function (_super) {
     };
     List.prototype.replace = function (target) {
         if (target.statics.blotName !== this.statics.blotName) {
-            var item = Registry.create(this.statics.defaultChild);
+            var item = Parchment.create(this.statics.defaultChild);
             target.moveChildren(item);
             this.appendChild(item);
         }
@@ -4453,7 +4509,7 @@ var List = (function (_super) {
     return List;
 }(Container));
 List.blotName = 'list';
-List.scope = Registry.Scope.BLOCK_BLOT;
+List.scope = Parchment.Scope.BLOCK_BLOT;
 List.tagName = ['OL', 'UL'];
 List.defaultChild = 'list-item';
 List.allowedChildren = [ListItem];
@@ -4633,8 +4689,8 @@ var SyntaxCodeBlock = (function (_super) {
     return SyntaxCodeBlock;
 }(CodeBlock));
 SyntaxCodeBlock.className = 'ql-syntax';
-var CodeToken = new ClassAttributor('token', 'hljs', {
-    scope: /*Parchment*/ Registry.Scope.INLINE
+var CodeToken = new Parchment.ClassAttributor('token', 'hljs', {
+    scope: Parchment.Scope.INLINE
 });
 var Syntax = (function (_super) {
     __extends(Syntax, _super);
@@ -4750,7 +4806,7 @@ var Toolbar = (function (_super) {
                 debug.warn('ignoring attaching to disabled format', format, input);
                 return;
             }
-            if (Registry.query(format) == null) {
+            if (Parchment.query(format) == null) {
                 debug.warn('ignoring attaching to nonexistent format', format, input);
                 return;
             }
@@ -4783,7 +4839,7 @@ var Toolbar = (function (_super) {
             if (_this.handlers[format] != null) {
                 _this.handlers[format].call(_this, value);
             }
-            else if (Registry.query(format).prototype instanceof EmbedBlot) {
+            else if (Parchment.query(format).prototype instanceof Parchment.EmbedBlot) {
                 value = prompt("Enter " + format);
                 if (!value)
                     return;
@@ -5699,7 +5755,7 @@ var SnowTooltip = (function (_super) {
                 var _a = _this.quill.scroll.descendant(/*LinkBlot*/ Link, range.index), link_1 = _a[0], offset = _a[1];
                 if (link_1 != null) {
                     _this.linkRange = new Range(range.index - offset, link_1.length());
-                    var preview = LinkBlot.formats(link_1.domNode);
+                    var preview = Link.formats(link_1.domNode);
                     _this.preview.textContent = preview;
                     _this.preview.setAttribute('href', preview);
                     _this.show();

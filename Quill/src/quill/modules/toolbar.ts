@@ -67,7 +67,7 @@ class Toolbar extends Module {
                 debug.warn('ignoring attaching to disabled format', format, input);
                 return;
             }
-            if (/*Parchment*/Registry.query(format) == null) {
+            if (Parchment.query(format) == null) {
                 debug.warn('ignoring attaching to nonexistent format', format, input);
                 return;
             }
@@ -95,7 +95,7 @@ class Toolbar extends Module {
             let [range,] = this.quill.selection.getRange();
             if (this.handlers[format] != null) {
                 this.handlers[format].call(this, value);
-            } else if (/*Parchment*/Registry.query(format).prototype instanceof /*Parchment.*/EmbedBlot) {
+            } else if (Parchment.query(format).prototype instanceof Parchment.EmbedBlot) {
                 value = prompt(`Enter ${format}`);
                 if (!value) return;
                 this.quill.updateContents(new Delta()

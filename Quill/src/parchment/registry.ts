@@ -1,7 +1,7 @@
 //import Attributor from './attributor/attributor';
 //import { Blot, Formattable } from './blot/abstract/blot';
 
-namespace Registry {
+namespace Parchment  {
 
     export interface BlotConstructor {
         blotName: string;

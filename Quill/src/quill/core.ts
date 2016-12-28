@@ -57,7 +57,7 @@ Quill.register({
     'modules/keyboard': Keyboard
 });
 
-/*Parchment*/Registry.register(Block, Break, Cursor, Inline, Scroll, TextBlot);
+Parchment.register(Block, Break, Cursor, Inline, Scroll, TextBlot);
 
 
 // module.exports = Quill;
