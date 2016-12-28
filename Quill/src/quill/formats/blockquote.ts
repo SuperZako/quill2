@@ -3,7 +3,8 @@
 // import Block from '../blots/block';
 
 
-class Blockquote extends Block { }
+class Blockquote extends Block {
+}
 Blockquote.blotName = 'blockquote';
 Blockquote.tagName = 'blockquote';
 

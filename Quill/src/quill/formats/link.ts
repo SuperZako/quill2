@@ -3,6 +3,11 @@
 
 
 class Link extends Inline {
+
+    static blotName = 'link';
+    static tagName = 'A';
+    static SANITIZED_URL = 'about:blank';
+
     static create(value) {
         let node = super.create(value);
         value = this.sanitize(value);
@@ -21,13 +26,13 @@ class Link extends Inline {
 
     format(name, value) {
         if (name !== this.statics.blotName || !value) return super.format(name, value);
-        value = this.constructor.sanitize(value);
+        value = Link.sanitize(value);//this.constructor.sanitize(value);
         this.domNode.setAttribute('href', value);
     }
 }
-Link.blotName = 'link';
-Link.tagName = 'A';
-Link.SANITIZED_URL = 'about:blank';
+//Link.blotName = 'link';
+//Link.tagName = 'A';
+//Link.SANITIZED_URL = 'about:blank';
 
 
 function sanitize(url, protocols) {

@@ -4293,7 +4293,7 @@ var Link = (function (_super) {
     Link.prototype.format = function (name, value) {
         if (name !== this.statics.blotName || !value)
             return _super.prototype.format.call(this, name, value);
-        value = this.constructor.sanitize(value);
+        value = Link.sanitize(value); //this.constructor.sanitize(value);
         this.domNode.setAttribute('href', value);
     };
     return Link;
@@ -4301,6 +4301,9 @@ var Link = (function (_super) {
 Link.blotName = 'link';
 Link.tagName = 'A';
 Link.SANITIZED_URL = 'about:blank';
+//Link.blotName = 'link';
+//Link.tagName = 'A';
+//Link.SANITIZED_URL = 'about:blank';
 function sanitize(url, protocols) {
     var anchor = document.createElement('a');
     anchor.href = url;
