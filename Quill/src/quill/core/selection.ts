@@ -12,18 +12,20 @@
 
 
 class Range {
-    constructor(index, length = 0) {
-        this.index = index;
-        this.length = length;
+    constructor(public index, public length = 0) {
+        // this.index = index;
+        // this.length = length;
     }
 }
 
 
 class Selection {
-    constructor(public scroll, public  emitter) {
+    composing = false;
+    root;
+    constructor(public scroll, public emitter) {
         // this.emitter = emitter;
         // this.scroll = scroll;
-        this.composing = false;
+        // this.composing = false;
         this.root = this.scroll.domNode;
         this.root.addEventListener('compositionstart', () => {
             this.composing = true;

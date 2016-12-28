@@ -19,6 +19,18 @@ const SHORTKEY = /Mac/i.test(navigator.platform) ? 'metaKey' : 'ctrlKey';
 
 
 class Keyboard extends Module {
+    static keys = {
+        BACKSPACE: 8,
+        TAB: 9,
+        ENTER: 13,
+        ESCAPE: 27,
+        LEFT: 37,
+        UP: 38,
+        RIGHT: 39,
+        DOWN: 40,
+        DELETE: 46
+    };
+
     static match(evt, binding) {
         binding = normalize(binding);
         if (!!binding.shortKey !== evt[SHORTKEY] && binding.shortKey !== null) return false;
@@ -128,17 +140,17 @@ class Keyboard extends Module {
     }
 }
 
-Keyboard.keys = {
-    BACKSPACE: 8,
-    TAB: 9,
-    ENTER: 13,
-    ESCAPE: 27,
-    LEFT: 37,
-    UP: 38,
-    RIGHT: 39,
-    DOWN: 40,
-    DELETE: 46
-};
+//Keyboard.keys = {
+//    BACKSPACE: 8,
+//    TAB: 9,
+//    ENTER: 13,
+//    ESCAPE: 27,
+//    LEFT: 37,
+//    UP: 38,
+//    RIGHT: 39,
+//    DOWN: 40,
+//    DELETE: 46
+//};
 
 Keyboard.DEFAULTS = {
     bindings: {

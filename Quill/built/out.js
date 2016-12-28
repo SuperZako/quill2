@@ -1784,6 +1784,19 @@ Emitter.sources = {
     SILENT: 'silent',
     USER: 'user'
 };
+//Emitter.events = {
+//    EDITOR_CHANGE: 'editor-change',
+//    SCROLL_BEFORE_UPDATE: 'scroll-before-update',
+//    SCROLL_OPTIMIZE: 'scroll-optimize',
+//    SCROLL_UPDATE: 'scroll-update',
+//    SELECTION_CHANGE: 'selection-change',
+//    TEXT_CHANGE: 'text-change'
+//};
+//Emitter.sources = {
+//    API: 'api',
+//    SILENT: 'silent',
+//    USER: 'user'
+//};
 // export default Emitter; 
 //import Parchment from 'parchment';
 ///<reference path='./embed.ts' />
@@ -2474,6 +2487,8 @@ var Range = (function () {
         if (length === void 0) { length = 0; }
         this.index = index;
         this.length = length;
+        // this.index = index;
+        // this.length = length;
     }
     return Range;
 }());
@@ -2482,9 +2497,10 @@ var Selection = (function () {
         var _this = this;
         this.scroll = scroll;
         this.emitter = emitter;
+        this.composing = false;
         // this.emitter = emitter;
         // this.scroll = scroll;
-        this.composing = false;
+        // this.composing = false;
         this.root = this.scroll.domNode;
         this.root.addEventListener('compositionstart', function () {
             _this.composing = true;
@@ -3145,6 +3161,15 @@ Quill.DEFAULTS = {
     strict: true,
     theme: 'default'
 };
+//Quill.DEFAULTS = {
+//    bounds: null,
+//    formats: null,
+//    modules: {},
+//    placeholder: '',
+//    readOnly: false,
+//    strict: true,
+//    theme: 'default'
+//};
 Quill.events = Emitter.events;
 Quill.sources = Emitter.sources;
 // eslint-disable-next-line no-undef
@@ -3943,6 +3968,17 @@ Keyboard.keys = {
     DOWN: 40,
     DELETE: 46
 };
+//Keyboard.keys = {
+//    BACKSPACE: 8,
+//    TAB: 9,
+//    ENTER: 13,
+//    ESCAPE: 27,
+//    LEFT: 37,
+//    UP: 38,
+//    RIGHT: 39,
+//    DOWN: 40,
+//    DELETE: 46
+//};
 Keyboard.DEFAULTS = {
     bindings: {
         'bold': makeFormatHandler('bold'),
@@ -5206,10 +5242,12 @@ var IconPicker = (function (_super) {
 // export default IconPicker; 
 var Tooltip = (function () {
     function Tooltip(quill, boundsContainer) {
+        if (boundsContainer === void 0) { boundsContainer = document.body; }
         var _this = this;
         this.quill = quill;
+        this.boundsContainer = boundsContainer;
         // this.quill = quill;
-        this.boundsContainer = boundsContainer || document.body;
+        // this.boundsContainer = boundsContainer || document.body;
         this.root = quill.addContainer('ql-tooltip');
         this.root.innerHTML = this.constructor.TEMPLATE;
         var offset = parseInt(window.getComputedStyle(this.root).marginTop);

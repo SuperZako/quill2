@@ -14,6 +14,7 @@
 
 
 class Toolbar extends Module {
+    container;
     constructor(quill, options) {
         super(quill, options);
         if (Array.isArray(this.options.container)) {

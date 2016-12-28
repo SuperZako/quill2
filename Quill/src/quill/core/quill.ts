@@ -23,6 +23,16 @@
 
 
 class Quill {
+    static DEFAULTS = {
+        bounds: null,
+        formats: null,
+        modules: {},
+        placeholder: '',
+        readOnly: false,
+        strict: true,
+        theme: 'default'
+    };
+
     static debug(limit) {
         // logger.level(limit);
     }
@@ -306,15 +316,15 @@ class Quill {
         }, source, true);
     }
 }
-Quill.DEFAULTS = {
-    bounds: null,
-    formats: null,
-    modules: {},
-    placeholder: '',
-    readOnly: false,
-    strict: true,
-    theme: 'default'
-};
+//Quill.DEFAULTS = {
+//    bounds: null,
+//    formats: null,
+//    modules: {},
+//    placeholder: '',
+//    readOnly: false,
+//    strict: true,
+//    theme: 'default'
+//};
 Quill.events = Emitter.events;
 Quill.sources = Emitter.sources;
 // eslint-disable-next-line no-undef
