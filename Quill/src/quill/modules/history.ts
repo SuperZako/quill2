@@ -7,7 +7,7 @@
 // import Module from '../core/module';
 
 
-class History extends Module {
+class _History extends Module {
     constructor(quill, options) {
         super(quill, options);
         this.lastRecorded = 0;
@@ -85,7 +85,7 @@ class History extends Module {
         this.change('undo', 'redo');
     }
 }
-History.DEFAULTS = {
+_History.DEFAULTS = {
     delay: 1000,
     maxStack: 100,
     userOnly: false

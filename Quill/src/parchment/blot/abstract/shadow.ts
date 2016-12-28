@@ -9,7 +9,7 @@ namespace Parchment {
         static blotName = 'abstract';
         static className: string;
         static scope: Scope;
-        static tagName: string[];
+        static tagName: string | string[];
 
         prev: Blot;
         next: Blot;

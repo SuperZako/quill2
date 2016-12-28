@@ -1,4 +1,5 @@
-﻿// import EventEmitter from 'eventemitter3';
+﻿///<reference path='../../EventEmitter.ts' />
+// import EventEmitter from 'eventemitter3';
 
 ///<reference path='./logger.ts' />
 // import logger from './logger';

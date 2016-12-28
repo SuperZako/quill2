@@ -1420,7 +1420,7 @@ var Parchment;
     }(Parchment.FormatBlot));
     InlineBlot.blotName = 'inline';
     InlineBlot.scope = Parchment.Scope.INLINE_BLOT;
-    InlineBlot.tagName = ['SPAN'];
+    InlineBlot.tagName = 'SPAN';
     Parchment.InlineBlot = InlineBlot;
     // export default InlineBlot;
 })(Parchment || (Parchment = {}));
@@ -2044,6 +2044,7 @@ debug.level = _namespace.level = function (newLevel) {
     level = newLevel;
 };
 //export default namespace; 
+///<reference path='../../EventEmitter.ts' />
 // import EventEmitter from 'eventemitter3';
 ///<reference path='./logger.ts' />
 // import logger from './logger';
@@ -2772,18 +2773,18 @@ Module.DEFAULTS = {};
 ///<reference path='./logger.ts' />
 //import logger from './logger';
 // let debug = logger('quill:selection');
-var Range = (function () {
-    function Range(index, length) {
+var _Range = (function () {
+    function _Range(index, length) {
         if (length === void 0) { length = 0; }
         this.index = index;
         this.length = length;
         // this.index = index;
         // this.length = length;
     }
-    return Range;
+    return _Range;
 }());
-var Selection = (function () {
-    function Selection(scroll, emitter) {
+var _Selection = (function () {
+    function _Selection(scroll, emitter) {
         var _this = this;
         this.scroll = scroll;
         this.emitter = emitter;
@@ -2800,7 +2801,7 @@ var Selection = (function () {
         });
         this.cursor = Parchment.create('cursor', this);
         // savedRange is last non-null range
-        this.lastRange = this.savedRange = new Range(0, 0);
+        this.lastRange = this.savedRange = new _Range(0, 0);
         ['keyup', 'mouseup', 'mouseleave', 'touchend', 'touchleave', 'focus', 'blur'].forEach(function (eventName) {
             _this.root.addEventListener(eventName, function () {
                 // When range used to be a selection and user click within the selection,
@@ -2829,13 +2830,13 @@ var Selection = (function () {
         });
         this.update(Emitter.sources.SILENT);
     }
-    Selection.prototype.focus = function () {
+    _Selection.prototype.focus = function () {
         if (this.hasFocus())
             return;
         this.root.focus();
         this.setRange(this.savedRange);
     };
-    Selection.prototype.format = function (format, value) {
+    _Selection.prototype.format = function (format, value) {
         if (this.scroll.whitelist != null && !this.scroll.whitelist[format])
             return;
         this.scroll.update();
@@ -2847,7 +2848,7 @@ var Selection = (function () {
             if (blot == null)
                 return;
             // TODO Give blot ability to not split
-            if (blot instanceof Parchment.Leaf) {
+            if (blot instanceof Parchment.LeafBlot) {
                 var after = blot.split(nativeRange.start.offset);
                 blot.parent.insertBefore(this.cursor, after);
             }
@@ -2861,7 +2862,7 @@ var Selection = (function () {
         this.setNativeRange(this.cursor.textNode, this.cursor.textNode.data.length);
         this.update();
     };
-    Selection.prototype.getBounds = function (index, length) {
+    _Selection.prototype.getBounds = function (index, length) {
         if (length === void 0) { length = 0; }
         var scrollLength = this.scroll.length();
         index = Math.min(index, scrollLength - 1);
@@ -2918,7 +2919,7 @@ var Selection = (function () {
         };
         var _b, _c, _d;
     };
-    Selection.prototype.getNativeRange = function () {
+    _Selection.prototype.getNativeRange = function () {
         var selection = document.getSelection();
         if (selection == null || selection.rangeCount <= 0)
             return null;
@@ -2954,7 +2955,7 @@ var Selection = (function () {
         // debug.info('getNativeRange', range);
         return range;
     };
-    Selection.prototype.getRange = function () {
+    _Selection.prototype.getRange = function () {
         var _this = this;
         var range = this.getNativeRange();
         if (range == null)
@@ -2979,12 +2980,12 @@ var Selection = (function () {
         });
         var start = Math.min.apply(Math, indexes), end = Math.max.apply(Math, indexes);
         end = Math.min(end, this.scroll.length() - 1);
-        return [new Range(start, end - start), range];
+        return [new _Range(start, end - start), range];
     };
-    Selection.prototype.hasFocus = function () {
+    _Selection.prototype.hasFocus = function () {
         return document.activeElement === this.root;
     };
-    Selection.prototype.scrollIntoView = function (range) {
+    _Selection.prototype.scrollIntoView = function (range) {
         if (range === void 0) { range = this.lastRange; }
         if (range == null)
             return;
@@ -3000,7 +3001,7 @@ var Selection = (function () {
             this.root.scrollTop = line.domNode.offsetTop;
         }
     };
-    Selection.prototype.setNativeRange = function (startNode, startOffset, endNode, endOffset, force) {
+    _Selection.prototype.setNativeRange = function (startNode, startOffset, endNode, endOffset, force) {
         if (endNode === void 0) { endNode = startNode; }
         if (endOffset === void 0) { endOffset = startOffset; }
         if (force === void 0) { force = false; }
@@ -3031,7 +3032,7 @@ var Selection = (function () {
             document.body.focus(); // root.blur() not enough on IE11+Travis+SauceLabs (but not local VMs)
         }
     };
-    Selection.prototype.setRange = function (range, force, source) {
+    _Selection.prototype.setRange = function (range, force, source) {
         var _this = this;
         if (force === void 0) { force = false; }
         if (source === void 0) { source = Emitter.sources.API; }
@@ -3061,7 +3062,7 @@ var Selection = (function () {
         }
         this.update(source);
     };
-    Selection.prototype.update = function (source) {
+    _Selection.prototype.update = function (source) {
         if (source === void 0) { source = Emitter.sources.USER; }
         var nativeRange, oldRange = this.lastRange;
         _a = this.getRange(), this.lastRange = _a[0], nativeRange = _a[1];
@@ -3080,7 +3081,7 @@ var Selection = (function () {
         }
         var _a, _b, _c;
     };
-    return Selection;
+    return _Selection;
 }());
 function contains(parent, descendant) {
     try {
@@ -3148,6 +3149,7 @@ var Quill = (function () {
     function Quill(container, options) {
         if (options === void 0) { options = {}; }
         var _this = this;
+        this.emitter = new Emitter();
         this.options = expandConfig(container, options);
         this.container = this.options.container;
         if (this.container == null) {
@@ -3160,13 +3162,13 @@ var Quill = (function () {
         this.container.classList.add('ql-container');
         this.container.innerHTML = '';
         this.root = this.addContainer('ql-editor');
-        this.emitter = new Emitter();
+        // this.emitter = new Emitter();
         this.scroll = Parchment.create(this.root, {
             emitter: this.emitter,
             whitelist: this.options.formats
         });
         this.editor = new Editor(this.scroll);
-        this.selection = new Selection(this.scroll, this.emitter);
+        this.selection = new _Selection(this.scroll, this.emitter);
         this.theme = new this.options.theme(this, this.options);
         this.keyboard = this.theme.addModule('keyboard');
         this.clipboard = this.theme.addModule('clipboard');
@@ -3414,7 +3416,7 @@ var Quill = (function () {
         }
         else {
             _a = overload(index, length, source), index = _a[0], length = _a[1], source = _a[3];
-            this.selection.setRange(new Range(index, length), source);
+            this.selection.setRange(new _Range(index, length), source);
         }
         this.selection.scrollIntoView();
         var _a;
@@ -3451,6 +3453,8 @@ Quill.DEFAULTS = {
     strict: true,
     theme: 'default'
 };
+Quill.events = Emitter.events;
+Quill.sources = Emitter.sources;
 //Quill.DEFAULTS = {
 //    bounds: null,
 //    formats: null,
@@ -3460,8 +3464,8 @@ Quill.DEFAULTS = {
 //    strict: true,
 //    theme: 'default'
 //};
-Quill.events = Emitter.events;
-Quill.sources = Emitter.sources;
+//Quill.events = Emitter.events;
+//Quill.sources = Emitter.sources;
 // eslint-disable-next-line no-undef
 Quill.version = typeof (QUILL_VERSION) === 'undefined' ? 'dev' : QUILL_VERSION;
 Quill.imports = {
@@ -3611,7 +3615,7 @@ function shiftRange(range, index, length, source) {
             }
         }), start = _b[0], end = _b[1];
     }
-    return new Range(start, end - start);
+    return new _Range(start, end - start);
     var _a, _b;
 }
 // export { expandConfig, overload, Quill as default }; 
@@ -3999,9 +4003,9 @@ function matchText(node, delta) {
 // import Quill from '../core/quill';
 ///<reference path='../core/module.ts' />
 // import Module from '../core/module';
-var History = (function (_super) {
-    __extends(History, _super);
-    function History(quill, options) {
+var _History = (function (_super) {
+    __extends(_History, _super);
+    function _History(quill, options) {
         var _this = _super.call(this, quill, options) || this;
         _this.lastRecorded = 0;
         _this.ignoreChange = false;
@@ -4023,7 +4027,7 @@ var History = (function (_super) {
         }
         return _this;
     }
-    History.prototype.change = function (source, dest) {
+    _History.prototype.change = function (source, dest) {
         if (this.stack[source].length === 0)
             return;
         var delta = this.stack[source].pop();
@@ -4036,10 +4040,10 @@ var History = (function (_super) {
         this.quill.selection.scrollIntoView();
         this.stack[dest].push(delta);
     };
-    History.prototype.clear = function () {
+    _History.prototype.clear = function () {
         this.stack = { undo: [], redo: [] };
     };
-    History.prototype.record = function (changeDelta, oldDelta) {
+    _History.prototype.record = function (changeDelta, oldDelta) {
         if (changeDelta.ops.length === 0)
             return;
         this.stack.redo = [];
@@ -4061,10 +4065,10 @@ var History = (function (_super) {
             this.stack.undo.shift();
         }
     };
-    History.prototype.redo = function () {
+    _History.prototype.redo = function () {
         this.change('redo', 'undo');
     };
-    History.prototype.transform = function (delta) {
+    _History.prototype.transform = function (delta) {
         this.stack.undo.forEach(function (change) {
             change.undo = delta.transform(change.undo, true);
             change.redo = delta.transform(change.redo, true);
@@ -4074,12 +4078,12 @@ var History = (function (_super) {
             change.redo = delta.transform(change.redo, true);
         });
     };
-    History.prototype.undo = function () {
+    _History.prototype.undo = function () {
         this.change('undo', 'redo');
     };
-    return History;
+    return _History;
 }(Module));
-History.DEFAULTS = {
+_History.DEFAULTS = {
     delay: 1000,
     maxStack: 100,
     userOnly: false
@@ -4544,7 +4548,7 @@ Quill.register({
     'blots/scroll': Scroll,
     'blots/text': TextBlot,
     'modules/clipboard': Clipboard,
-    'modules/history': History,
+    'modules/history': _History,
     'modules/keyboard': Keyboard
 });
 Parchment.register(Block, Break, Cursor, Inline, Scroll, TextBlot);
@@ -4989,7 +4993,7 @@ var FormulaBlot = (function (_super) {
             window.katex.render(value, node);
             node.setAttribute('data-value', value);
         }
-        node.setAttribute('contenteditable', false);
+        node.setAttribute('contenteditable', 'false');
         return node;
     };
     FormulaBlot.value = function (domNode) {
@@ -5965,7 +5969,7 @@ var BubbleTooltip = (function (_super) {
                     var lastLine = lines[lines.length - 1];
                     var index = lastLine.offset(_this.quill.scroll);
                     var length_2 = Math.min(lastLine.length() - 1, range.index + range.length - index);
-                    var bounds_1 = _this.quill.getBounds(new Range(index, length_2));
+                    var bounds_1 = _this.quill.getBounds(new _Range(index, length_2));
                     _this.position(bounds_1);
                 }
             }
@@ -6113,7 +6117,7 @@ var SnowTooltip = (function (_super) {
             if (range.length === 0) {
                 var _a = _this.quill.scroll.descendant(/*LinkBlot*/ Link, range.index), link_1 = _a[0], offset = _a[1];
                 if (link_1 != null) {
-                    _this.linkRange = new Range(range.index - offset, link_1.length());
+                    _this.linkRange = new _Range(range.index - offset, link_1.length());
                     var preview = Link.formats(link_1.domNode);
                     _this.preview.textContent = preview;
                     _this.preview.setAttribute('href', preview);

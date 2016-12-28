@@ -11,7 +11,7 @@
 // let debug = logger('quill:selection');
 
 
-class Range {
+class _Range {
     constructor(public index, public length = 0) {
         // this.index = index;
         // this.length = length;
@@ -19,9 +19,12 @@ class Range {
 }
 
 
-class Selection {
+class _Selection {
     composing = false;
     root;
+    cursor;
+    lastRange: _Range;
+    savedRange: _Range;
     constructor(public scroll, public emitter) {
         // this.emitter = emitter;
         // this.scroll = scroll;
@@ -35,7 +38,7 @@ class Selection {
         });
         this.cursor = Parchment.create('cursor', this);
         // savedRange is last non-null range
-        this.lastRange = this.savedRange = new Range(0, 0);
+        this.lastRange = this.savedRange = new _Range(0, 0);
         ['keyup', 'mouseup', 'mouseleave', 'touchend', 'touchleave', 'focus', 'blur'].forEach((eventName) => {
             this.root.addEventListener(eventName, () => {
                 // When range used to be a selection and user click within the selection,
@@ -77,7 +80,7 @@ class Selection {
             let blot = Parchment.find(nativeRange.start.node, false);
             if (blot == null) return;
             // TODO Give blot ability to not split
-            if (blot instanceof Parchment.Leaf) {
+            if (blot instanceof Parchment.LeafBlot) {
                 let after = blot.split(nativeRange.start.offset);
                 blot.parent.insertBefore(this.cursor, after);
             } else {
@@ -195,7 +198,7 @@ class Selection {
         });
         let start = Math.min(...indexes), end = Math.max(...indexes);
         end = Math.min(end, this.scroll.length() - 1);
-        return [new Range(start, end - start), range];
+        return [new _Range(start, end - start), range];
     }
 
     hasFocus() {

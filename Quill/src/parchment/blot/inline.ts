@@ -17,7 +17,7 @@ namespace Parchment {
     export class InlineBlot extends FormatBlot {
         static blotName = 'inline';
         static scope = Scope.INLINE_BLOT;
-        static tagName = ['SPAN'];
+        static tagName: string | string[] = 'SPAN';
 
         static formats(domNode): any {
             if (domNode.tagName === InlineBlot.tagName) return undefined;

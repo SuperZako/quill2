@@ -1,5 +1,5 @@
 ﻿class Module {
-    constructor(public quill,public options = {}) {
+    constructor(public quill: Quill, public options = {}) {
         // this.quill = quill;
         // this.options = options;
     }

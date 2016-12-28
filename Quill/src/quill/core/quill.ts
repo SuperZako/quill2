@@ -32,6 +32,9 @@ class Quill {
         theme: 'default'
     };
 
+    static events = Emitter.events;
+    static sources = Emitter.sources;
+
     static debug(limit) {
         // logger.level(limit);
     }
@@ -67,6 +70,12 @@ class Quill {
         }
     }
 
+    options;
+    container;
+    root;
+    emitter = new Emitter();
+    scroll;
+    editor: Editor;
     constructor(container, options = {}) {
         this.options = expandConfig(container, options);
         this.container = this.options.container;
@@ -80,13 +89,13 @@ class Quill {
         this.container.classList.add('ql-container');
         this.container.innerHTML = '';
         this.root = this.addContainer('ql-editor');
-        this.emitter = new Emitter();
+        // this.emitter = new Emitter();
         this.scroll = Parchment.create(this.root, {
             emitter: this.emitter,
             whitelist: this.options.formats
         });
         this.editor = new Editor(this.scroll);
-        this.selection = new Selection(this.scroll, this.emitter);
+        this.selection = new _Selection(this.scroll, this.emitter);
         this.theme = new this.options.theme(this, this.options);
         this.keyboard = this.theme.addModule('keyboard');
         this.clipboard = this.theme.addModule('clipboard');
@@ -291,7 +300,7 @@ class Quill {
             this.selection.setRange(null, length || Quill.sources.API);
         } else {
             [index, length, , source] = overload(index, length, source);
-            this.selection.setRange(new Range(index, length), source);
+            this.selection.setRange(new _Range(index, length), source);
         }
         this.selection.scrollIntoView();
     }
@@ -325,8 +334,8 @@ class Quill {
 //    strict: true,
 //    theme: 'default'
 //};
-Quill.events = Emitter.events;
-Quill.sources = Emitter.sources;
+//Quill.events = Emitter.events;
+//Quill.sources = Emitter.sources;
 // eslint-disable-next-line no-undef
 Quill.version = typeof (QUILL_VERSION) === 'undefined' ? 'dev' : QUILL_VERSION;
 
@@ -469,7 +478,7 @@ function shiftRange(range, index, length, source) {
             }
         });
     }
-    return new Range(start, end - start);
+    return new _Range(start, end - start);
 }
 
 

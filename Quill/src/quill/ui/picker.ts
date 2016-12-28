@@ -3,6 +3,7 @@
 
 class Picker {
     container = document.createElement('span');
+    label;
     constructor(public select) {
         // this.select = select;
         // this.container = document.createElement('span');

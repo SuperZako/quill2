@@ -69,7 +69,7 @@ class BubbleTooltip extends BaseTooltip {
                     let lastLine = lines[lines.length - 1];
                     let index = lastLine.offset(this.quill.scroll);
                     let length = Math.min(lastLine.length() - 1, range.index + range.length - index);
-                    let bounds = this.quill.getBounds(new Range(index, length));
+                    let bounds = this.quill.getBounds(new _Range(index, length));
                     this.position(bounds);
                 }
             } else if (document.activeElement !== this.textbox && this.quill.hasFocus()) {

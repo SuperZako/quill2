@@ -17,6 +17,7 @@ const NEWLINE_LENGTH = 1;
 
 
 class BlockEmbed extends Embed {
+    attributes: Parchment.AttributorStore;
     attach() {
         super.attach();
         this.attributes = new Parchment.AttributorStore(this.domNode);

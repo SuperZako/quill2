@@ -53,7 +53,7 @@ Quill.register({
     'blots/text': TextBlot,
 
     'modules/clipboard': Clipboard,
-    'modules/history': History,
+    'modules/history': _History,
     'modules/keyboard': Keyboard
 });
 

@@ -12,12 +12,12 @@ class FormulaBlot extends Embed {
     static tagName = 'SPAN';
 
     static create(value) {
-        let node = super.create(value);
+        let node = <HTMLElement>super.create(value);
         if (typeof value === 'string') {
             window.katex.render(value, node);
             node.setAttribute('data-value', value);
         }
-        node.setAttribute('contenteditable', false);
+        node.setAttribute('contenteditable', 'false');
         return node;
     }
 
