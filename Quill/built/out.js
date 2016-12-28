@@ -4631,6 +4631,9 @@ var Video = (function (_super) {
 Video.blotName = 'video';
 Video.className = 'ql-video';
 Video.tagName = 'IFRAME';
+//Video.blotName = 'video';
+//Video.className = 'ql-video';
+//Video.tagName = 'IFRAME';
 // export default Video; 
 ///<reference path='../blots/embed.ts' />
 // import Embed from '../blots/embed';

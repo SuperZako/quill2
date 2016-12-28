@@ -10,6 +10,10 @@ const ATTRIBUTES = [
 
 
 class Video extends BlockEmbed {
+    static blotName = 'video';
+    static className = 'ql-video';
+    static tagName = 'IFRAME';
+
     static create(value) {
         let node = super.create(value);
         node.setAttribute('frameborder', '0');
@@ -47,9 +51,9 @@ class Video extends BlockEmbed {
         }
     }
 }
-Video.blotName = 'video';
-Video.className = 'ql-video';
-Video.tagName = 'IFRAME';
+//Video.blotName = 'video';
+//Video.className = 'ql-video';
+//Video.tagName = 'IFRAME';
 
 
 // export default Video;
