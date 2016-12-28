@@ -2,6 +2,7 @@
 //import { Blot, Formattable } from './blot/abstract/blot';
 
 namespace Registry {
+
     export interface BlotConstructor {
         blotName: string;
         new (node: Node, value?: any): Blot;

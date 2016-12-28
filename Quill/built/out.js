@@ -2725,6 +2725,8 @@ var Theme = (function () {
     function Theme(quill, options) {
         this.quill = quill;
         this.options = options;
+        // this.quill = quill;
+        // this.options = options;
         this.modules = {};
     }
     Theme.prototype.init = function () {
