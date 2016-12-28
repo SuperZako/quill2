@@ -64,8 +64,7 @@ function objEquiv(a, b, opts) {
     }
     try {
         var ka = objectKeys(a), kb = objectKeys(b);
-    }
-    catch (e) {
+    } catch (e) {
         return false;
     }
     // having the same number of owned properties (keys incorporates
@@ -86,4 +85,3 @@ function objEquiv(a, b, opts) {
     }
     return typeof a === typeof b;
 }
-            /***/

@@ -57,7 +57,7 @@ class Block extends Parchment.BlockBlot {
     static defaultChild = 'break';
     static allowedChildren = [Inline, Embed, TextBlot];
 
-    cache = {};
+    cache: { delta?: any } = {};
     constructor(domNode) {
         super(domNode);
         // this.cache = {};

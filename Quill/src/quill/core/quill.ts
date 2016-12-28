@@ -21,7 +21,6 @@
 
 // let debug = logger('quill');
 
-
 class Quill {
     static DEFAULTS = {
         bounds: null,
@@ -44,6 +43,7 @@ class Quill {
         return this.imports[name];
     }
 
+    static imports;
     static register(path, target, overwrite = false) {
         if (typeof path !== 'string') {
             let name = path.attrName || path.blotName;
