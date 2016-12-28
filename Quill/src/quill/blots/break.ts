@@ -3,6 +3,9 @@
 
 
 class Break extends Embed {
+    static blotName = 'break';
+    static tagName = 'BR';
+
     static value() {
         return undefined;
     }
@@ -23,8 +26,8 @@ class Break extends Embed {
         return '';
     }
 }
-Break.blotName = 'break';
-Break.tagName = 'BR';
+//Break.blotName = 'break';
+//Break.tagName = 'BR';
 
 
 //export default Break;

@@ -1718,6 +1718,8 @@ var Break = (function (_super) {
 }(Embed));
 Break.blotName = 'break';
 Break.tagName = 'BR';
+//Break.blotName = 'break';
+//Break.tagName = 'BR';
 //export default Break; 
 // import Parchment from 'parchment';
 ///<reference path='./block.ts' />
