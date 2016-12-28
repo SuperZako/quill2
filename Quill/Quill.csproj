@@ -86,7 +86,7 @@
     <Content Include="src\delta\delta.js" />
     <Content Include="src\delta\op.js" />
     <Content Include="src\diff.js" />
-    <Content Include="src\EventEmitter.js" />
+    <TypeScriptCompile Include="src\EventEmitter.ts" />
     <Content Include="src\extend.js" />
     <Content Include="tsconfig.json" />
     <None Include="Web.Debug.config">
