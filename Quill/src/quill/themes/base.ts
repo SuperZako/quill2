@@ -170,6 +170,7 @@ BaseTheme.DEFAULTS = extend(true, {}, Theme.DEFAULTS, {
 
 
 class BaseTooltip extends Tooltip {
+    textbox;
     constructor(quill, boundsContainer) {
         super(quill, boundsContainer);
         this.textbox = this.root.querySelector('input[type="text"]');

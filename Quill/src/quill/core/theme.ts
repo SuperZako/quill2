@@ -1,8 +1,9 @@
 ﻿class Theme {
+    modules = {};
     constructor(public quill, public options) {
         // this.quill = quill;
         // this.options = options;
-        this.modules = {};
+        // this.modules = {};
     }
 
     init() {

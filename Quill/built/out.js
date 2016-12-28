@@ -1315,7 +1315,7 @@ var Parchment;
     }(Parchment.FormatBlot));
     BlockBlot.blotName = 'block';
     BlockBlot.scope = Parchment.Scope.BLOCK_BLOT;
-    BlockBlot.tagName = ['P'];
+    BlockBlot.tagName = 'P';
     Parchment.BlockBlot = BlockBlot;
     // export default BlockBlot;
 })(Parchment || (Parchment = {}));
@@ -3103,9 +3103,10 @@ var Theme = (function () {
     function Theme(quill, options) {
         this.quill = quill;
         this.options = options;
+        this.modules = {};
         // this.quill = quill;
         // this.options = options;
-        this.modules = {};
+        // this.modules = {};
     }
     Theme.prototype.init = function () {
         var _this = this;
@@ -3455,6 +3456,13 @@ Quill.DEFAULTS = {
 };
 Quill.events = Emitter.events;
 Quill.sources = Emitter.sources;
+Quill.version = typeof (QUILL_VERSION) === 'undefined' ? 'dev' : QUILL_VERSION;
+Quill.imports = {
+    'delta': Delta,
+    //'parchment'   : Parchment,
+    'core/module': Module,
+    'core/theme': Theme
+};
 //Quill.DEFAULTS = {
 //    bounds: null,
 //    formats: null,
@@ -3467,13 +3475,13 @@ Quill.sources = Emitter.sources;
 //Quill.events = Emitter.events;
 //Quill.sources = Emitter.sources;
 // eslint-disable-next-line no-undef
-Quill.version = typeof (QUILL_VERSION) === 'undefined' ? 'dev' : QUILL_VERSION;
-Quill.imports = {
-    'delta': Delta,
-    //'parchment'   : Parchment,
-    'core/module': Module,
-    'core/theme': Theme
-};
+//Quill.version = typeof (QUILL_VERSION) === 'undefined' ? 'dev' : QUILL_VERSION;
+//Quill.imports = {
+//    'delta': Delta,
+//    //'parchment'   : Parchment,
+//    'core/module': Module,
+//    'core/theme': Theme
+//};
 function expandConfig(container, userConfig) {
     userConfig = extend(true, {
         container: container,
@@ -4009,6 +4017,9 @@ var _History = (function (_super) {
         var _this = _super.call(this, quill, options) || this;
         _this.lastRecorded = 0;
         _this.ignoreChange = false;
+        _this.stack = { undo: [], redo: [] };
+        // this.lastRecorded = 0;
+        // this.ignoreChange = false;
         _this.clear();
         _this.quill.on(Quill.events.EDITOR_CHANGE, function (eventName, delta, oldDelta, source) {
             if (eventName !== Quill.events.TEXT_CHANGE || _this.ignoreChange)
@@ -4088,6 +4099,11 @@ _History.DEFAULTS = {
     maxStack: 100,
     userOnly: false
 };
+//_History.DEFAULTS = {
+//    delay: 1000,
+//    maxStack: 100,
+//    userOnly: false
+//};
 function endsWithNewlineChange(delta) {
     var lastOp = delta.ops[delta.ops.length - 1];
     if (lastOp == null)

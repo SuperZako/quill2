@@ -66,6 +66,7 @@ const STYLE_ATTRIBUTORS = [
 
 
 class Clipboard extends Module {
+    container;
     constructor(quill, options) {
         super(quill, options);
         this.quill.root.addEventListener('paste', this.onPaste.bind(this));

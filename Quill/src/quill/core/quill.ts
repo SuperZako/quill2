@@ -35,6 +35,15 @@ class Quill {
     static events = Emitter.events;
     static sources = Emitter.sources;
 
+    static version = typeof (QUILL_VERSION) === 'undefined' ? 'dev' : QUILL_VERSION;
+
+    static imports = {
+        'delta': Delta,
+        //'parchment'   : Parchment,
+        'core/module': Module,
+        'core/theme': Theme
+    };
+
     static debug(limit) {
         // logger.level(limit);
     }
@@ -46,7 +55,6 @@ class Quill {
         return this.imports[name];
     }
 
-    static imports;
     static register(path, target, overwrite = false) {
         if (typeof path !== 'string') {
             let name = path.attrName || path.blotName;
@@ -76,6 +84,7 @@ class Quill {
     emitter = new Emitter();
     scroll;
     editor: Editor;
+    selection: _Selection;
     constructor(container, options = {}) {
         this.options = expandConfig(container, options);
         this.container = this.options.container;
@@ -337,14 +346,14 @@ class Quill {
 //Quill.events = Emitter.events;
 //Quill.sources = Emitter.sources;
 // eslint-disable-next-line no-undef
-Quill.version = typeof (QUILL_VERSION) === 'undefined' ? 'dev' : QUILL_VERSION;
+//Quill.version = typeof (QUILL_VERSION) === 'undefined' ? 'dev' : QUILL_VERSION;
 
-Quill.imports = {
-    'delta': Delta,
-    //'parchment'   : Parchment,
-    'core/module': Module,
-    'core/theme': Theme
-};
+//Quill.imports = {
+//    'delta': Delta,
+//    //'parchment'   : Parchment,
+//    'core/module': Module,
+//    'core/theme': Theme
+//};
 
 
 function expandConfig(container, userConfig) {

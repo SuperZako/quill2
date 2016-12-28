@@ -5,7 +5,7 @@ namespace Parchment {
     export class BlockBlot extends FormatBlot {
         static blotName = 'block';
         static scope = Scope.BLOCK_BLOT;
-        static tagName = ['P'];
+        static tagName: string | string[] = 'P';
 
         static formats(domNode): any {
             let tagName = (<any>query(BlockBlot.blotName)).tagName;

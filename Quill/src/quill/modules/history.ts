@@ -8,10 +8,21 @@
 
 
 class _History extends Module {
+    static DEFAULTS = {
+        delay: 1000,
+        maxStack: 100,
+        userOnly: false
+    };
+
+
+    lastRecorded = 0;
+    ignoreChange = false;
+    stack = { undo: [], redo: [] };
+
     constructor(quill, options) {
         super(quill, options);
-        this.lastRecorded = 0;
-        this.ignoreChange = false;
+        // this.lastRecorded = 0;
+        // this.ignoreChange = false;
         this.clear();
         this.quill.on(Quill.events.EDITOR_CHANGE, (eventName, delta, oldDelta, source) => {
             if (eventName !== Quill.events.TEXT_CHANGE || this.ignoreChange) return;
@@ -85,11 +96,11 @@ class _History extends Module {
         this.change('undo', 'redo');
     }
 }
-_History.DEFAULTS = {
-    delay: 1000,
-    maxStack: 100,
-    userOnly: false
-};
+//_History.DEFAULTS = {
+//    delay: 1000,
+//    maxStack: 100,
+//    userOnly: false
+//};
 
 function endsWithNewlineChange(delta) {
     let lastOp = delta.ops[delta.ops.length - 1];
