@@ -12,15 +12,18 @@
 //import TextBlot from '../blots/text';
 
 
-class Code extends Inline { }
-Code.blotName = 'code';
-Code.tagName = 'CODE';
+class Code extends Inline {
+    static blotName = 'code';
+    static tagName = 'CODE';
+}
+//Code.blotName = 'code';
+//Code.tagName = 'CODE';
 
 
 class CodeBlock extends Block {
-   static blotName = 'code-block';
-   static tagName = 'PRE';
-   static TAB = '  ';
+    static blotName = 'code-block';
+    static tagName = 'PRE';
+    static TAB = '  ';
 
     static create(value) {
         let domNode = super.create(value);

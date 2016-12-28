@@ -2067,6 +2067,8 @@ var Code = (function (_super) {
 }(Inline));
 Code.blotName = 'code';
 Code.tagName = 'CODE';
+//Code.blotName = 'code';
+//Code.tagName = 'CODE';
 var CodeBlock = (function (_super) {
     __extends(CodeBlock, _super);
     function CodeBlock() {
