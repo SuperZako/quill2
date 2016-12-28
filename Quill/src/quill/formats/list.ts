@@ -40,7 +40,7 @@ class ListItem extends Block {
     }
 }
 ListItem.blotName = 'list-item';
-ListItem.tagName = 'LI';
+ListItem.tagName = ['LI'];
 
 
 class List extends Container {

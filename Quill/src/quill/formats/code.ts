@@ -18,6 +18,10 @@ Code.tagName = 'CODE';
 
 
 class CodeBlock extends Block {
+   static blotName = 'code-block';
+   static tagName = 'PRE';
+   static TAB = '  ';
+
     static create(value) {
         let domNode = super.create(value);
         domNode.setAttribute('spellcheck', false);
@@ -49,7 +53,7 @@ class CodeBlock extends Block {
 
     formatAt(index, length, name, value) {
         if (length === 0) return;
-        if (/*Parchment*/Registry.query(name, /*Parchment*/Registry.Scope.BLOCK) == null ||
+        if (Parchment.query(name, Parchment.Scope.BLOCK) == null ||
             (name === this.statics.blotName && value === this.statics.formats(this.domNode))) {
             return;
         }
@@ -90,7 +94,7 @@ class CodeBlock extends Block {
 
     optimize() {
         if (!this.domNode.textContent.endsWith('\n')) {
-            this.appendChild(/*Parchment*/Registry.create('text', '\n'));
+            this.appendChild(Parchment.create('text', '\n'));
         }
         super.optimize();
         let next = this.next;
@@ -106,10 +110,10 @@ class CodeBlock extends Block {
     replace(target) {
         super.replace(target);
         [].slice.call(this.domNode.querySelectorAll('*')).forEach(function (node) {
-            let blot = /*Parchment*/Registry.find(node);
+            let blot = Parchment.find(node);
             if (blot == null) {
                 node.parentNode.removeChild(node);
-            } else if (blot instanceof /*Parchment.*/Embed) {
+            } else if (blot instanceof Parchment.EmbedBlot) {
                 blot.remove();
             } else {
                 blot.unwrap();
@@ -117,9 +121,9 @@ class CodeBlock extends Block {
         });
     }
 }
-CodeBlock.blotName = 'code-block';
-CodeBlock.tagName = 'PRE';
-CodeBlock.TAB = '  ';
+//CodeBlock.blotName = 'code-block';
+//CodeBlock.tagName = 'PRE';
+//CodeBlock.TAB = '  ';
 
 
 // export { Code, CodeBlock as default };

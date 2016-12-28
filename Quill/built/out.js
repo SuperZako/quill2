@@ -1670,9 +1670,13 @@ var Block = (function (_super) {
     return Block;
 }(Parchment.BlockBlot));
 Block.blotName = 'block';
-Block.tagName = 'P';
+Block.tagName = ['P'];
 Block.defaultChild = 'break';
 Block.allowedChildren = [Inline, Embed, TextBlot];
+//Block.blotName = 'block';
+//Block.tagName = 'P';
+//Block.defaultChild = 'break';
+//Block.allowedChildren = [Inline, Embed, TextBlot];
 function bubbleFormats(blot, formats) {
     if (formats === void 0) { formats = {}; }
     if (blot == null)
@@ -2098,7 +2102,7 @@ var CodeBlock = (function (_super) {
     CodeBlock.prototype.formatAt = function (index, length, name, value) {
         if (length === 0)
             return;
-        if (Registry.query(name, /*Parchment*/ Registry.Scope.BLOCK) == null ||
+        if (Parchment.query(name, Parchment.Scope.BLOCK) == null ||
             (name === this.statics.blotName && value === this.statics.formats(this.domNode))) {
             return;
         }
@@ -2139,7 +2143,7 @@ var CodeBlock = (function (_super) {
     };
     CodeBlock.prototype.optimize = function () {
         if (!this.domNode.textContent.endsWith('\n')) {
-            this.appendChild(/*Parchment*/ Registry.create('text', '\n'));
+            this.appendChild(Parchment.create('text', '\n'));
         }
         _super.prototype.optimize.call(this);
         var next = this.next;
@@ -2154,11 +2158,11 @@ var CodeBlock = (function (_super) {
     CodeBlock.prototype.replace = function (target) {
         _super.prototype.replace.call(this, target);
         [].slice.call(this.domNode.querySelectorAll('*')).forEach(function (node) {
-            var blot = Registry.find(node);
+            var blot = Parchment.find(node);
             if (blot == null) {
                 node.parentNode.removeChild(node);
             }
-            else if (blot instanceof Embed) {
+            else if (blot instanceof Parchment.EmbedBlot) {
                 blot.remove();
             }
             else {
@@ -2171,6 +2175,9 @@ var CodeBlock = (function (_super) {
 CodeBlock.blotName = 'code-block';
 CodeBlock.tagName = 'PRE';
 CodeBlock.TAB = '  ';
+//CodeBlock.blotName = 'code-block';
+//CodeBlock.tagName = 'PRE';
+//CodeBlock.TAB = '  ';
 // export { Code, CodeBlock as default }; 
 //import Delta from 'quill-delta';
 //import DeltaOp from 'quill-delta/lib/op';
@@ -4440,7 +4447,7 @@ var ListItem = (function (_super) {
     return ListItem;
 }(Block));
 ListItem.blotName = 'list-item';
-ListItem.tagName = 'LI';
+ListItem.tagName = ['LI'];
 var List = (function (_super) {
     __extends(List, _super);
     function List() {
@@ -4555,6 +4562,8 @@ var Strike = (function (_super) {
 }(Inline));
 Strike.blotName = 'strike';
 Strike.tagName = 'S';
+//Strike.blotName = 'strike';
+//Strike.tagName = 'S';
 // export default Strike; 
 ///<reference path='../blots/inline.ts' />
 //import Inline from '../blots/inline';
@@ -4652,6 +4661,9 @@ var FormulaBlot = (function (_super) {
 FormulaBlot.blotName = 'formula';
 FormulaBlot.className = 'ql-formula';
 FormulaBlot.tagName = 'SPAN';
+//FormulaBlot.blotName = 'formula';
+//FormulaBlot.className = 'ql-formula';
+//FormulaBlot.tagName = 'SPAN';
 function Formula() {
     if (window.katex == null) {
         throw new Error('Formula module requires KaTeX.');

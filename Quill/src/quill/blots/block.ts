@@ -52,6 +52,11 @@ BlockEmbed.scope = Parchment.Scope.BLOCK_BLOT;
 
 
 class Block extends Parchment.BlockBlot {
+    static blotName = 'block';
+    static tagName = ['P'];
+    static defaultChild = 'break';
+    static allowedChildren = [Inline, Embed, TextBlot];
+
     constructor(domNode) {
         super(domNode);
         this.cache = {};
@@ -160,10 +165,10 @@ class Block extends Parchment.BlockBlot {
         }
     }
 }
-Block.blotName = 'block';
-Block.tagName = 'P';
-Block.defaultChild = 'break';
-Block.allowedChildren = [Inline, Embed, TextBlot];
+//Block.blotName = 'block';
+//Block.tagName = 'P';
+//Block.defaultChild = 'break';
+//Block.allowedChildren = [Inline, Embed, TextBlot];
 
 
 function bubbleFormats(blot, formats = {}) {

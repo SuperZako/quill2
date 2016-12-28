@@ -7,6 +7,10 @@
 
 
 class FormulaBlot extends Embed {
+    static blotName = 'formula';
+    static className = 'ql-formula';
+    static tagName = 'SPAN';
+
     static create(value) {
         let node = super.create(value);
         if (typeof value === 'string') {
@@ -25,9 +29,9 @@ class FormulaBlot extends Embed {
         return 1;
     }
 }
-FormulaBlot.blotName = 'formula';
-FormulaBlot.className = 'ql-formula';
-FormulaBlot.tagName = 'SPAN';
+//FormulaBlot.blotName = 'formula';
+//FormulaBlot.className = 'ql-formula';
+//FormulaBlot.tagName = 'SPAN';
 
 
 function Formula() {
