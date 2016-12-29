@@ -177,7 +177,7 @@ class _Selection {
         return range;
     }
 
-    getRange() {
+    getRange(): [_Range, any] {
         let range = this.getNativeRange();
         if (range == null) return [null, null];
         let positions = [[range.start.node, range.start.offset]];

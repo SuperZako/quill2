@@ -79,7 +79,7 @@ class Quill {
     }
 
     options;
-    container;
+    container: HTMLElement;
     root;
     emitter = new Emitter();
     scroll;

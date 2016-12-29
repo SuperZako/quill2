@@ -20,11 +20,11 @@ namespace Parchment {
             return this.constructor;
         }
 
-        static create(value: any): Node {
+        static create(value?: any): Node {
             if (this.tagName == null) {
                 throw new ParchmentError('Blot definition missing tagName');
             }
-            let node;
+            let node: Element;
             if (Array.isArray(this.tagName)) {
                 if (typeof value === 'string') {
                     value = value.toUpperCase();
@@ -49,7 +49,7 @@ namespace Parchment {
         }
 
 
-        constructor(public domNode: Node) {
+        constructor(public domNode: HTMLElement) {
             this.attach();
         }
 

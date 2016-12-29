@@ -983,6 +983,18 @@ var Parchment;
                 return [null, -1];
             }
         };
+        ContainerBlot.prototype._descendants = function (index, length) {
+            if (index === void 0) { index = 0; }
+            if (length === void 0) { length = Number.MAX_VALUE; }
+            var descendants = [], lengthLeft = length;
+            this.children.forEachAt(index, length, function (child, index, length) {
+                if (child instanceof ContainerBlot) {
+                    descendants = descendants.concat(child._descendants(index, lengthLeft));
+                }
+                lengthLeft -= length;
+            });
+            return descendants;
+        };
         ContainerBlot.prototype.descendants = function (criteria, index, length) {
             if (index === void 0) { index = 0; }
             if (length === void 0) { length = Number.MAX_VALUE; }
@@ -1858,7 +1870,7 @@ var Block = (function (_super) {
     }
     Block.prototype.delta = function () {
         if (this.cache.delta == null) {
-            this.cache.delta = this.descendants(Parchment.LeafBlot).reduce(function (delta, leaf) {
+            this.cache.delta = this._descendants().reduce(function (delta, leaf) {
                 if (leaf.length() === 0) {
                     return delta;
                 }

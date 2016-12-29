@@ -66,7 +66,7 @@ class Block extends Parchment.BlockBlot {
 
     delta() {
         if (this.cache.delta == null) {
-            this.cache.delta = this.descendants(Parchment.LeafBlot).reduce((delta, leaf) => {
+            this.cache.delta = this._descendants<Parchment.LeafBlot>().reduce((delta, leaf) => {
                 if (leaf.length() === 0) {
                     return delta;
                 } else {
@@ -94,7 +94,7 @@ class Block extends Parchment.BlockBlot {
         this.cache = {};
     }
 
-    insertAt(index, value, def) {
+    insertAt(index: number, value: string, def?) {
         if (def != null) return super.insertAt(index, value, def);
         if (value.length === 0) return;
         let lines = value.split('\n');

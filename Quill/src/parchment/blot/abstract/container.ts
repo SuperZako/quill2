@@ -60,6 +60,16 @@ namespace Parchment {
             }
         }
 
+        _descendants<T>(index: number = 0, length: number = Number.MAX_VALUE): T[] {
+            let descendants = [], lengthLeft = length;
+            this.children.forEachAt(index, length, function (child, index, length) {
+                if (child instanceof ContainerBlot) {
+                    descendants = descendants.concat(child._descendants(index, lengthLeft));
+                }
+                lengthLeft -= length;
+            });
+            return descendants;
+        }
         descendants<T>(criteria: { new (): T; }, index: number, length: number): T[];
         descendants<T>(criteria: (blot: Blot) => boolean, index: number, length: number): T[];
         descendants<T>(criteria: any, index: number = 0, length: number = Number.MAX_VALUE): T[] {
